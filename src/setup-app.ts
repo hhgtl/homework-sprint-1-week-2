@@ -6,10 +6,10 @@ import {authMiddleware} from "./middleware/auth-middleware";
 
 export const setupApp = (app: Express) => {
     app.use(express.json());
-
+    app.use('/testing', testingRouter);
     app.use(authMiddleware);
 
-    app.use('/testing', testingRouter);
+
     app.use('/blogs', blogsRouter);
     app.use('/posts', postsRouter);
 
