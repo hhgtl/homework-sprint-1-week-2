@@ -2,6 +2,7 @@ import {Router} from "express";
 import {blogsRepositories} from "../repositories/blogs-repositories";
 import {body, FieldValidationError, param, Result, validationResult} from "express-validator";
 import { Request, Response, NextFunction } from 'express'
+import {authMiddleware} from "../middleware/auth-middleware";
 
 export const blogsRouter = Router({})
 
@@ -39,6 +40,7 @@ blogsRouter.get("/", (req, res) => {
 })
 
 blogsRouter.post("/",
+    authMiddleware,
     nameValidation,
     descriptionValidation,
     websiteUrlValidation,
@@ -82,6 +84,7 @@ blogsRouter.get("/:id", (req, res) => {
 })
 
 blogsRouter.put("/:id",
+    authMiddleware,
     idValidation,
     nameValidation,
     descriptionValidation,
@@ -98,7 +101,7 @@ blogsRouter.put("/:id",
         const blog = blogsRepositories.changeBlogById(id, {name, description, websiteUrl});
 
         if (blog) {
-            res.status(200).send(blog)
+            res.status(204).send(blog)
         } else {
             res.status(404).send()
         }
@@ -122,7 +125,9 @@ blogsRouter.put("/:id",
 
 })
 
-blogsRouter.delete("/:id", (req, res) => {
+blogsRouter.delete("/:id",
+    authMiddleware,
+    (req, res) => {
     const id = req.params.id;
 
     const blog = blogsRepositories.removeBlogById(id);

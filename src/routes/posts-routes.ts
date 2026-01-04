@@ -3,6 +3,7 @@ import {postsRepositories} from "../repositories/posts-repositories";
 import {body, FieldValidationError, validationResult} from "express-validator";
 import {blogsRepositories} from "../repositories/blogs-repositories";
 import {blogsRouter} from "./blogs-routes";
+import {authMiddleware} from "../middleware/auth-middleware";
 
 export const postsRouter = Router({})
 
@@ -37,6 +38,7 @@ postsRouter.get("/", (req, res) => {
 })
 
 postsRouter.post("/",
+    authMiddleware,
     titleValidation,
     shortDescriptionValidation,
     contentValidation,
@@ -83,6 +85,7 @@ postsRouter.get("/:id", (req, res) => {
 })
 
 postsRouter.put("/:id",
+    authMiddleware,
     titleValidation,
     shortDescriptionValidation,
     contentValidation,
@@ -121,7 +124,9 @@ postsRouter.put("/:id",
         }
     })
 
-postsRouter.delete("/:id", (req, res) => {
+postsRouter.delete("/:id",
+    authMiddleware,
+    (req, res) => {
     const id = req.params.id;
 
     const post = postsRepositories.removePostsById(id);
