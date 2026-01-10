@@ -1,6 +1,7 @@
 import {randomUUID} from "crypto";
 import {blogsCollection, postsCollection} from "../db/db";
 import {stripMongoDBId} from "../common/utils/stripMongoDBId";
+import {WithId} from "mongodb";
 
 export const postsRepositories = {
     async getAllPosts() {
@@ -27,7 +28,7 @@ export const postsRepositories = {
             createdAt: new Date().toISOString(),
         }
         await postsCollection.insertOne(newPost)
-        return newPost
+        return stripMongoDBId(newPost as WithId<typeof newPost>);
     },
     async findPostsById(id: string) {
         const post = await postsCollection.findOne({id})
