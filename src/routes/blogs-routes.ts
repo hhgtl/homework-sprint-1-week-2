@@ -127,10 +127,10 @@ blogsRouter.put("/:id",
 
 blogsRouter.delete("/:id",
     authMiddleware,
-    (req, res) => {
+    async (req, res) => {
     const id = req.params.id;
 
-    const blog = blogsRepositories.removeBlogById(id);
+    const blog = await blogsRepositories.removeBlogById(id);
 
     if (blog) {
         res.status(204).send()
