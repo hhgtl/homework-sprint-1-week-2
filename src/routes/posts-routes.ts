@@ -1,8 +1,6 @@
 import {Request, Router} from "express";
 import {postsRepositories} from "../repositories/posts-repositories";
 import {body, FieldValidationError, validationResult} from "express-validator";
-import {blogsRepositories} from "../repositories/blogs-repositories";
-import {blogsRouter} from "./blogs-routes";
 import {authMiddleware} from "../middleware/auth-middleware";
 
 export const postsRouter = Router({})
@@ -31,8 +29,8 @@ export const blogIdValidation = body('blogId')
     .isLength({ min: 1 })
     .withMessage('BlogId is required and must be a string')
 
-postsRouter.get("/", (req, res) => {
-    const posts = postsRepositories.getAllPosts();
+postsRouter.get("/", async (req, res) => {
+    const posts = await postsRepositories.getAllPosts();
 
     res.status(200).send(posts)
 })
@@ -43,7 +41,7 @@ postsRouter.post("/",
     shortDescriptionValidation,
     contentValidation,
     blogIdValidation,
-    (req, res) => {
+    async (req, res) => {
         const title = req.body.title;
         const shortDescription = req.body.shortDescription;
         const content = req.body.content;
@@ -51,7 +49,7 @@ postsRouter.post("/",
         const errors = validationResult(req);
 
         if (errors.isEmpty()) {
-            const newPosts = postsRepositories.createPosts({title, blogId, content, shortDescription})
+            const newPosts = await postsRepositories.createPosts({title, blogId, content, shortDescription})
             res.status(201).send(newPosts);
         } else {
             const formatter = (error: FieldValidationError) => {
@@ -72,10 +70,10 @@ postsRouter.post("/",
     })
 
 
-postsRouter.get("/:id", (req, res) => {
+postsRouter.get("/:id", async (req, res) => {
     const id = req.params.id;
 
-    const blog = postsRepositories.findPostsById(id);
+    const blog = await postsRepositories.findPostsById(id);
 
     if (blog) {
         res.status(200).send(blog)
@@ -90,7 +88,7 @@ postsRouter.put("/:id",
     shortDescriptionValidation,
     contentValidation,
     blogIdValidation,
-    (req: Request<{ id: string }>, res) => {
+    async (req: Request<{ id: string }>, res) => {
         const id = req.params.id;
         const title = req.body.title;
         const shortDescription = req.body.shortDescription;
@@ -99,7 +97,7 @@ postsRouter.put("/:id",
         const errors = validationResult(req);
 
         if (errors.isEmpty()) {
-            const newPosts = postsRepositories.changePostsById(id, {title, blogId, content, shortDescription})
+            const newPosts = await postsRepositories.changePostsById(id, {title, blogId, content, shortDescription})
             if (newPosts) {
                 res.status(204).send();
             } else {
@@ -126,10 +124,10 @@ postsRouter.put("/:id",
 
 postsRouter.delete("/:id",
     authMiddleware,
-    (req, res) => {
+    async (req, res) => {
     const id = req.params.id;
 
-    const post = postsRepositories.removePostsById(id);
+    const post = await postsRepositories.removePostsById(id);
 
     if (post) {
         res.status(204).send()

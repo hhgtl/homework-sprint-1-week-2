@@ -1,51 +1,36 @@
 import {randomUUID} from 'crypto';
-import {blogsDB} from "../db/blogs-db";
+import {blogsCollection} from "../db/db";
 
 export const blogsRepositories = {
-    getAllBlogs() {
-        return blogsDB
+    async getAllBlogs() {
+        return await blogsCollection.find().toArray();
     },
-    createBlog({name, description, websiteUrl}: {name: string, description: string, websiteUrl: string}) {
+    async createBlog({name, description, websiteUrl}: {name: string, description: string, websiteUrl: string}) {
         const newBlog = {
             id: randomUUID(),
             name,
             description,
             websiteUrl,
+            isMembership: false,
+            createdAt: new Date().toISOString(),
         }
-        blogsDB.push(newBlog)
+        await blogsCollection.insertOne(newBlog);
         return newBlog
     },
-    findBlogById(id: string) {
-        const index = blogsDB.findIndex(b => b.id === id);
-
-        if (index === -1) {
-            return false
-        } else {
-            return blogsDB[index]
-        }
+    async findBlogById(id: string) {
+        return await blogsCollection.findOne({id})
     },
-    changeBlogById(id: string, body: {name: string, description: string, websiteUrl: string}) {
-        const index = blogsDB.findIndex(b => b.id === id);
-
-        if (index === -1) {
-            return false
-        } else {
-            return blogsDB[index] = {
-                ...blogsDB[index],
+    async changeBlogById(id: string, body: {name: string, description: string, websiteUrl: string}) {
+        const res = await blogsCollection.updateOne({id}, {$set: {
                 websiteUrl: body.websiteUrl,
                 name: body.name,
                 description: body.description,
-
-            }
-        }
+            }})
+        return res.matchedCount === 1
     },
-    removeBlogById(id: string) {
-        const index = blogsDB.findIndex(b => b.id === id);
-        if (index === -1) {
-            return false
-        } else {
-            blogsDB.splice(index, 1)
-            return true
-        }
+    async removeBlogById(id: string) {
+        const res = await blogsCollection.deleteOne({id})
+
+        return res.deletedCount === 1
     }
 }

@@ -1,7 +1,7 @@
 import {Router} from "express";
 import {blogsRepositories} from "../repositories/blogs-repositories";
-import {body, FieldValidationError, param, Result, validationResult} from "express-validator";
-import { Request, Response, NextFunction } from 'express'
+import {body, FieldValidationError, param, validationResult} from "express-validator";
+import { Request } from 'express'
 import {authMiddleware} from "../middleware/auth-middleware";
 
 export const blogsRouter = Router({})
@@ -33,8 +33,8 @@ export const websiteUrlValidation = body('websiteUrl')
     .withMessage('Invalid URL pattern');
 
 
-blogsRouter.get("/", (req, res) => {
-    const allBlogs = blogsRepositories.getAllBlogs()
+blogsRouter.get("/", async (req, res) => {
+    const allBlogs = await blogsRepositories.getAllBlogs()
 
     res.status(200).send(allBlogs)
 })
@@ -44,14 +44,14 @@ blogsRouter.post("/",
     nameValidation,
     descriptionValidation,
     websiteUrlValidation,
-    (req, res) => {
+    async (req, res) => {
         const name = req.body.name;
         const description = req.body.description;
         const websiteUrl = req.body.websiteUrl;
         const errors = validationResult(req);
 
         if (errors.isEmpty()) {
-            const newBlog = blogsRepositories.createBlog({description, name, websiteUrl});
+            const newBlog = await blogsRepositories.createBlog({description, name, websiteUrl});
             res.status(201).send(newBlog);
         } else {
             const formatter = (error: FieldValidationError) => {
@@ -71,10 +71,10 @@ blogsRouter.post("/",
         }
 })
 
-blogsRouter.get("/:id", (req, res) => {
+blogsRouter.get("/:id", async (req, res) => {
     const id = req.params.id;
 
-    const blog = blogsRepositories.findBlogById(id);
+    const blog = await blogsRepositories.findBlogById(id);
 
     if (blog) {
         res.status(200).send(blog)
