@@ -16,7 +16,6 @@ export type PostType = {
     content: string,
     blogId: string,
     blogName: string,
-    isMembership: boolean,
     createdAt: string,
 }
 

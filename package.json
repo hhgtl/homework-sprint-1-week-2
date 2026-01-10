@@ -8,7 +8,8 @@
     "dev": "nodemon dist/index.js",
     "jest": "jest -i",
     "lint": "eslint --fix .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "deploy to vercel": "vercel --prod"
   },
   "keywords": [],
   "author": "",
