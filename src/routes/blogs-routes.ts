@@ -89,7 +89,7 @@ blogsRouter.put("/:id",
     nameValidation,
     descriptionValidation,
     websiteUrlValidation,
-    (req: Request<{ id: string }>, res) => {
+    async (req: Request<{ id: string }>, res) => {
     const id = req.params.id;
     const name = req.body.name;
     const description = req.body.description;
@@ -98,8 +98,7 @@ blogsRouter.put("/:id",
 
 
     if (errors.isEmpty()) {
-        const blog = blogsRepositories.changeBlogById(id, {name, description, websiteUrl});
-
+        const blog = await blogsRepositories.changeBlogById(id, {name, description, websiteUrl});
         if (blog) {
             res.status(204).send(blog)
         } else {
