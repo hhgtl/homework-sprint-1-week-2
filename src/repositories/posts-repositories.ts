@@ -1,5 +1,4 @@
-import {randomUUID} from "crypto";
-import {blogsCollection, postsCollection} from "../db/db";
+import {postsCollection, PostType} from "../db/db";
 import {stripMongoDBId} from "../common/utils/stripMongoDBId";
 import {WithId} from "mongodb";
 
@@ -8,25 +7,8 @@ export const postsRepositories = {
         const posts =  await postsCollection.find().toArray();
 
         return stripMongoDBId(posts);
-
-        // return posts.map((post) => {
-        //     const {_id, ...rest} = post;
-        //     return {...rest}
-        // });
     },
-    async createPosts({title, shortDescription, content, blogId}: {title: string, shortDescription: string, content: string, blogId: string}) {
-        const blog = await blogsCollection.findOne({id: blogId})
-        const blogName = blog ? blog.name : ''
-
-        const newPost = {
-            id: randomUUID(),
-            title,
-            shortDescription,
-            content,
-            blogId,
-            blogName,
-            createdAt: new Date().toISOString(),
-        }
+    async createPosts(newPost: PostType) {
         await postsCollection.insertOne(newPost)
         return stripMongoDBId(newPost as WithId<typeof newPost>);
     },
@@ -37,13 +19,8 @@ export const postsRepositories = {
         }
         return post
     },
-    async changePostsById(id: string, body: {title: string, shortDescription: string, content: string, blogId: string}) {
-        const res = await postsCollection.updateOne({id}, {$set: {
-                title: body.title,
-                shortDescription: body.shortDescription,
-                content: body.content,
-                blogId: body.blogId,
-            }})
+    async changePostsById(id: string, payload: {title: string, shortDescription: string, content: string, blogId: string}) {
+        const res = await postsCollection.updateOne({id}, {$set: payload})
         return res.matchedCount === 1
     },
     async removePostsById(id: string) {

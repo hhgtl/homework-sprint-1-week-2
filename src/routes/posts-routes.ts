@@ -1,7 +1,7 @@
 import {Request, Router} from "express";
-import {postsRepositories} from "../repositories/posts-repositories";
 import {body, FieldValidationError, validationResult} from "express-validator";
 import {authMiddleware} from "../middleware/auth-middleware";
+import {postsService} from "../services/posts-service";
 
 export const postsRouter = Router({})
 
@@ -30,7 +30,7 @@ export const blogIdValidation = body('blogId')
     .withMessage('BlogId is required and must be a string')
 
 postsRouter.get("/", async (req, res) => {
-    const posts = await postsRepositories.getAllPosts();
+    const posts = await postsService.getAllPosts();
 
     res.status(200).send(posts)
 })
@@ -49,7 +49,7 @@ postsRouter.post("/",
         const errors = validationResult(req);
 
         if (errors.isEmpty()) {
-            const newPosts = await postsRepositories.createPosts({title, blogId, content, shortDescription})
+            const newPosts = await postsService.createPosts({title, blogId, content, shortDescription})
             res.status(201).send(newPosts);
         } else {
             const formatter = (error: FieldValidationError) => {
@@ -73,7 +73,7 @@ postsRouter.post("/",
 postsRouter.get("/:id", async (req, res) => {
     const id = req.params.id;
 
-    const blog = await postsRepositories.findPostsById(id);
+    const blog = await postsService.findPostsById(id);
 
     if (blog) {
         res.status(200).send(blog)
@@ -97,7 +97,7 @@ postsRouter.put("/:id",
         const errors = validationResult(req);
 
         if (errors.isEmpty()) {
-            const newPosts = await postsRepositories.changePostsById(id, {title, blogId, content, shortDescription})
+            const newPosts = await postsService.changePostsById(id, {title, blogId, content, shortDescription})
             if (newPosts) {
                 res.status(204).send();
             } else {
@@ -127,7 +127,7 @@ postsRouter.delete("/:id",
     async (req, res) => {
     const id = req.params.id;
 
-    const post = await postsRepositories.removePostsById(id);
+    const post = await postsService.removePostsById(id);
 
     if (post) {
         res.status(204).send()
