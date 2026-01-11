@@ -3,6 +3,7 @@ import {blogsRepositories} from "../repositories/blogs-repositories";
 import {body, FieldValidationError, param, validationResult} from "express-validator";
 import { Request } from 'express'
 import {authMiddleware} from "../middleware/auth-middleware";
+import {blogsService} from "../services/blogs-service";
 
 export const blogsRouter = Router({})
 
@@ -34,7 +35,7 @@ export const websiteUrlValidation = body('websiteUrl')
 
 
 blogsRouter.get("/", async (req, res) => {
-    const allBlogs = await blogsRepositories.getAllBlogs()
+    const allBlogs = await blogsService.getAllBlogs()
 
     res.status(200).send(allBlogs)
 })
@@ -51,7 +52,7 @@ blogsRouter.post("/",
         const errors = validationResult(req);
 
         if (errors.isEmpty()) {
-            const newBlog = await blogsRepositories.createBlog({description, name, websiteUrl});
+            const newBlog = await blogsService.createBlog({description, name, websiteUrl});
             res.status(201).send(newBlog);
         } else {
             const formatter = (error: FieldValidationError) => {
@@ -74,7 +75,7 @@ blogsRouter.post("/",
 blogsRouter.get("/:id", async (req, res) => {
     const id = req.params.id;
 
-    const blog = await blogsRepositories.findBlogById(id);
+    const blog = await blogsService.findBlogById(id);
 
     if (blog) {
         res.status(200).send(blog)
@@ -98,7 +99,7 @@ blogsRouter.put("/:id",
 
 
     if (errors.isEmpty()) {
-        const blog = await blogsRepositories.changeBlogById(id, {name, description, websiteUrl});
+        const blog = await blogsService.changeBlogById(id, {name, description, websiteUrl});
         if (blog) {
             res.status(204).send(blog)
         } else {
@@ -129,7 +130,7 @@ blogsRouter.delete("/:id",
     async (req, res) => {
     const id = req.params.id;
 
-    const blog = await blogsRepositories.removeBlogById(id);
+    const blog = await blogsService.removeBlogById(id);
 
     if (blog) {
         res.status(204).send()

@@ -1,5 +1,5 @@
 import {randomUUID} from 'crypto';
-import {blogsCollection} from "../db/db";
+import {blogsCollection, BlogType} from "../db/db";
 import {stripMongoDBId} from "../common/utils/stripMongoDBId";
 import {WithId} from "mongodb";
 
@@ -8,15 +8,7 @@ export const blogsRepositories = {
         const blogs = await blogsCollection.find().toArray();
         return stripMongoDBId(blogs);
     },
-    async createBlog({name, description, websiteUrl}: {name: string, description: string, websiteUrl: string}) {
-        const newBlog = {
-            id: randomUUID(),
-            name,
-            description,
-            websiteUrl,
-            isMembership: false,
-            createdAt: new Date().toISOString(),
-        }
+    async createBlog(newBlog: BlogType) {
         await blogsCollection.insertOne(newBlog);
 
         return stripMongoDBId(newBlog as WithId<typeof newBlog>);
@@ -30,12 +22,8 @@ export const blogsRepositories = {
 
         return blog
     },
-    async changeBlogById(id: string, body: {name: string, description: string, websiteUrl: string}) {
-        const res = await blogsCollection.updateOne({id}, {$set: {
-                websiteUrl: body.websiteUrl,
-                name: body.name,
-                description: body.description,
-            }})
+    async changeBlogById(id: string, payload: {name: string, description: string, websiteUrl: string}) {
+        const res = await blogsCollection.updateOne({id}, {$set: payload})
         return res.matchedCount === 1
     },
     async removeBlogById(id: string) {
