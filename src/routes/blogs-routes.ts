@@ -4,6 +4,7 @@ import {body, FieldValidationError, param, validationResult} from "express-valid
 import { Request } from 'express'
 import {authMiddleware} from "../middleware/auth-middleware";
 import {blogsService} from "../services/blogs-service";
+import {inputValidationMiddleware} from "../middleware/inputValidationMiddleware";
 
 export const blogsRouter = Router({})
 
@@ -45,31 +46,14 @@ blogsRouter.post("/",
     nameValidation,
     descriptionValidation,
     websiteUrlValidation,
+    inputValidationMiddleware,
     async (req, res) => {
         const name = req.body.name;
         const description = req.body.description;
         const websiteUrl = req.body.websiteUrl;
-        const errors = validationResult(req);
 
-        if (errors.isEmpty()) {
-            const newBlog = await blogsService.createBlog({description, name, websiteUrl});
-            res.status(201).send(newBlog);
-        } else {
-            const formatter = (error: FieldValidationError) => {
-                return {
-                    message: error.msg,
-                    field: error.path
-                };
-            };
-            const result = validationResult(req);
-            const errors = result.array({ onlyFirstError: true }) as FieldValidationError[];
-
-            const errorsMessages = errors.map(formatter);
-
-            res.status(400).send({
-                "errorsMessages": errorsMessages
-            })
-        }
+        const newBlog = await blogsService.createBlog({description, name, websiteUrl});
+        res.status(201).send(newBlog);
 })
 
 blogsRouter.get("/:id", async (req, res) => {
@@ -90,40 +74,20 @@ blogsRouter.put("/:id",
     nameValidation,
     descriptionValidation,
     websiteUrlValidation,
+    inputValidationMiddleware,
     async (req: Request<{ id: string }>, res) => {
     const id = req.params.id;
     const name = req.body.name;
     const description = req.body.description;
     const websiteUrl = req.body.websiteUrl;
-    const errors = validationResult(req);
 
-
-    if (errors.isEmpty()) {
-        const blog = await blogsService.changeBlogById(id, {name, description, websiteUrl});
-        if (blog) {
-            res.status(204).send(blog)
-        } else {
-            res.status(404).send()
-        }
+    const blog = await blogsService.changeBlogById(id, {name, description, websiteUrl});
+    if (blog) {
+        res.status(204).send(blog)
     } else {
-        const formatter = (error: FieldValidationError) => {
-            return {
-                message: error.msg,
-                field: error.path
-            };
-        };
-        const result = validationResult(req);
-        const errors = result.array({ onlyFirstError: true }) as FieldValidationError[];
-
-        const errorsMessages = errors.map(formatter);
-
-        res.status(400).send({
-            "errorsMessages": errorsMessages
-        })
+        res.status(404).send()
     }
-
-
-})
+    })
 
 blogsRouter.delete("/:id",
     authMiddleware,

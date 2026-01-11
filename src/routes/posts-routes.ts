@@ -2,6 +2,7 @@ import {Request, Router} from "express";
 import {body, FieldValidationError, validationResult} from "express-validator";
 import {authMiddleware} from "../middleware/auth-middleware";
 import {postsService} from "../services/posts-service";
+import {inputValidationMiddleware} from "../middleware/inputValidationMiddleware";
 
 export const postsRouter = Router({})
 
@@ -41,32 +42,15 @@ postsRouter.post("/",
     shortDescriptionValidation,
     contentValidation,
     blogIdValidation,
+    inputValidationMiddleware,
     async (req, res) => {
         const title = req.body.title;
         const shortDescription = req.body.shortDescription;
         const content = req.body.content;
         const blogId = req.body.blogId;
-        const errors = validationResult(req);
 
-        if (errors.isEmpty()) {
-            const newPosts = await postsService.createPosts({title, blogId, content, shortDescription})
-            res.status(201).send(newPosts);
-        } else {
-            const formatter = (error: FieldValidationError) => {
-                return {
-                    message: error.msg,
-                    field: error.path
-                };
-            };
-            const result = validationResult(req);
-            const errors = result.array({ onlyFirstError: true }) as FieldValidationError[];
-
-            const errorsMessages = errors.map(formatter);
-
-            res.status(400).send({
-                "errorsMessages": errorsMessages
-            })
-        }
+        const newPosts = await postsService.createPosts({title, blogId, content, shortDescription})
+        res.status(201).send(newPosts);
     })
 
 
@@ -88,37 +72,19 @@ postsRouter.put("/:id",
     shortDescriptionValidation,
     contentValidation,
     blogIdValidation,
+    inputValidationMiddleware,
     async (req: Request<{ id: string }>, res) => {
         const id = req.params.id;
         const title = req.body.title;
         const shortDescription = req.body.shortDescription;
         const content = req.body.content;
         const blogId = req.body.blogId;
-        const errors = validationResult(req);
 
-        if (errors.isEmpty()) {
-            const newPosts = await postsService.changePostsById(id, {title, blogId, content, shortDescription})
-            if (newPosts) {
-                res.status(204).send();
-            } else {
-                res.status(404).send()
-            }
-
+        const newPosts = await postsService.changePostsById(id, {title, blogId, content, shortDescription})
+        if (newPosts) {
+            res.status(204).send();
         } else {
-            const formatter = (error: FieldValidationError) => {
-                return {
-                    message: error.msg,
-                    field: error.path
-                };
-            };
-            const result = validationResult(req);
-            const errors = result.array({ onlyFirstError: true }) as FieldValidationError[];
-
-            const errorsMessages = errors.map(formatter);
-
-            res.status(400).send({
-                "errorsMessages": errorsMessages
-            })
+            res.status(404).send()
         }
     })
 
