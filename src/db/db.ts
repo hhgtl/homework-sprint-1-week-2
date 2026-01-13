@@ -18,9 +18,13 @@ export type PostType = {
     blogName: string,
     createdAt: string,
 }
+//local
+const mongoUri = process.env.mongoURI || "mongodb://localhost:27017";
 
+// mongo atlas
 
-const mongoUri = "mongodb+srv://petrosahal66:nRjwaifSkxPl83xm@cluster0.o6rzywd.mongodb.net/?appName=Cluster0"
+// const mongoUri = "mongodb+srv://petrosahal66:fMNc55JdIgAzx81t@cluster0.o6rzywd.mongodb.net/?appName=Cluster0&family=4"
+
 
 export const client = new MongoClient(mongoUri);
 

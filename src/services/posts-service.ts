@@ -1,10 +1,16 @@
 import {randomUUID} from "crypto";
 import {postsRepositories} from "../repositories/posts-repositories";
 import {blogsRepositories} from "../repositories/blogs-repositories";
+import {SortDirection} from "../routes/blogs-routes";
+
+export type GetAllPostsQuery = {
+    sortBy: string,
+    sortDirection: SortDirection
+}
 
 export const postsService = {
-    async getAllPosts() {
-        return await postsRepositories.getAllPosts()
+    async getAllPosts({sortBy, sortDirection}: GetAllPostsQuery) {
+        return await postsRepositories.getAllPosts({sortBy, sortDirection})
     },
     async createPosts({title, shortDescription, content, blogId}: {title: string, shortDescription: string, content: string, blogId: string}) {
         const blog = await blogsRepositories.findBlogById(blogId)

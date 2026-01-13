@@ -1,7 +1,7 @@
 import {Router} from "express";
 import {blogsRepositories} from "../repositories/blogs-repositories";
-import {body, FieldValidationError, param, validationResult} from "express-validator";
-import { Request } from 'express'
+import {body, FieldValidationError, param, query, validationResult} from "express-validator";
+import { Request, Response } from 'express'
 import {authMiddleware} from "../middleware/auth-middleware";
 import {blogsService} from "../services/blogs-service";
 import {inputValidationMiddleware} from "../middleware/inputValidationMiddleware";
@@ -34,9 +34,32 @@ export const websiteUrlValidation = body('websiteUrl')
     .matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/)
     .withMessage('Invalid URL pattern');
 
+export const blogsQueryValidation = [
+    query('sortDirection')
+        .optional()
+        .isIn(['asc', 'desc'])
+        .withMessage('sortDirection must be asc or desc'),
 
-blogsRouter.get("/", async (req, res) => {
-    const allBlogs = await blogsService.getAllBlogs()
+    query('sortBy')
+        .optional()
+        .isString()
+        .trim(),
+
+    query('searchNameTerm')
+        .optional()
+        .isString()
+        .trim(),
+    inputValidationMiddleware
+];
+
+export type SortDirection = 'asc' | 'desc';
+
+blogsRouter.get("/", blogsQueryValidation, async (req: Request, res: Response) => {
+    const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm.toString() : null
+    const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt'
+    let sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc' as SortDirection;
+
+    const allBlogs = await blogsService.getAllBlogs({searchNameTerm, sortBy, sortDirection})
 
     res.status(200).send(allBlogs)
 })

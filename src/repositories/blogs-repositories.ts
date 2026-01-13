@@ -1,11 +1,21 @@
-import {randomUUID} from 'crypto';
 import {blogsCollection, BlogType} from "../db/db";
 import {stripMongoDBId} from "../common/utils/stripMongoDBId";
 import {WithId} from "mongodb";
+import {GetAllBlogsQuery} from "../services/blogs-service";
 
 export const blogsRepositories = {
-    async getAllBlogs() {
-        const blogs = await blogsCollection.find().toArray();
+    async getAllBlogs({sortBy, sortDirection, searchNameTerm}: GetAllBlogsQuery) {
+        const filter: any = {};
+
+        if (searchNameTerm) {
+            filter.name = { $regex: searchNameTerm, $options: 'i' };
+        }
+
+        const blogs = await blogsCollection
+            .find(filter)
+            .sort({ [sortBy]: sortDirection })
+            .toArray();
+
         return stripMongoDBId(blogs);
     },
     async createBlog(newBlog: BlogType) {

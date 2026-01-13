@@ -1,8 +1,9 @@
-import {Request, Router} from "express";
-import {body, FieldValidationError, validationResult} from "express-validator";
+import {Request, Response, Router} from "express";
+import {body, FieldValidationError, query, validationResult} from "express-validator";
 import {authMiddleware} from "../middleware/auth-middleware";
 import {postsService} from "../services/posts-service";
 import {inputValidationMiddleware} from "../middleware/inputValidationMiddleware";
+import {SortDirection} from "./blogs-routes";
 
 export const postsRouter = Router({})
 
@@ -30,8 +31,32 @@ export const blogIdValidation = body('blogId')
     .isLength({ min: 1 })
     .withMessage('BlogId is required and must be a string')
 
-postsRouter.get("/", async (req, res) => {
-    const posts = await postsService.getAllPosts();
+export const blogsQueryValidation = [
+    query('sortDirection')
+        .optional()
+        .isIn(['asc', 'desc'])
+        .withMessage('sortDirection must be asc or desc'),
+
+    query('sortBy')
+        .optional()
+        .isString()
+        .trim(),
+
+    query('searchNameTerm')
+        .optional()
+        .isString()
+        .trim(),
+    inputValidationMiddleware
+];
+
+
+postsRouter.get("/", blogsQueryValidation, async (req: Request, res: Response) => {
+    const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm.toString() : null
+    const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt'
+    let sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc' as SortDirection;
+
+
+    const posts = await postsService.getAllPosts({sortBy, sortDirection});
 
     res.status(200).send(posts)
 })
