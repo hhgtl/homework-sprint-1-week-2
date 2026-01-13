@@ -6,11 +6,13 @@ import {SortDirection} from "../routes/blogs-routes";
 export type GetAllPostsQuery = {
     sortBy: string,
     sortDirection: SortDirection
+    pageSize: number
+    pageNumber: number
 }
 
 export const postsService = {
-    async getAllPosts({sortBy, sortDirection}: GetAllPostsQuery) {
-        return await postsRepositories.getAllPosts({sortBy, sortDirection})
+    async getAllPosts({sortBy, sortDirection, pageNumber, pageSize}: GetAllPostsQuery) {
+        return await postsRepositories.getAllPosts({sortBy, sortDirection, pageNumber, pageSize})
     },
     async createPosts({title, shortDescription, content, blogId}: {title: string, shortDescription: string, content: string, blogId: string}) {
         const blog = await blogsRepositories.findBlogById(blogId)

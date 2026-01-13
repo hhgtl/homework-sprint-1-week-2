@@ -49,17 +49,30 @@ export const blogsQueryValidation = [
         .optional()
         .isString()
         .trim(),
+
+    query('pageNumber')
+        .optional()
+        .isString()
+        .trim(),
+
+    query('pageSize')
+        .optional()
+        .isString()
+        .trim(),
     inputValidationMiddleware
 ];
 
 export type SortDirection = 'asc' | 'desc';
 
 blogsRouter.get("/", blogsQueryValidation, async (req: Request, res: Response) => {
+    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
+    const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
+
     const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm.toString() : null
     const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt'
     let sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc' as SortDirection;
 
-    const allBlogs = await blogsService.getAllBlogs({searchNameTerm, sortBy, sortDirection})
+    const allBlogs = await blogsService.getAllBlogs({searchNameTerm, sortBy, sortDirection, pageNumber, pageSize})
 
     res.status(200).send(allBlogs)
 })

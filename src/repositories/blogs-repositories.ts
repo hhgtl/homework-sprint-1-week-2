@@ -4,7 +4,7 @@ import {WithId} from "mongodb";
 import {GetAllBlogsQuery} from "../services/blogs-service";
 
 export const blogsRepositories = {
-    async getAllBlogs({sortBy, sortDirection, searchNameTerm}: GetAllBlogsQuery) {
+    async getAllBlogs({sortBy, sortDirection, searchNameTerm, pageNumber, pageSize}: GetAllBlogsQuery) {
         const filter: any = {};
 
         if (searchNameTerm) {
@@ -14,6 +14,8 @@ export const blogsRepositories = {
         const blogs = await blogsCollection
             .find(filter)
             .sort({ [sortBy]: sortDirection })
+            .skip((pageNumber - 1) * pageSize)
+            .limit(pageSize)
             .toArray();
 
         return stripMongoDBId(blogs);

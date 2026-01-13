@@ -6,9 +6,11 @@ import {GetAllPostsQuery} from "../services/posts-service";
 
 
 export const postsRepositories = {
-    async getAllPosts({sortBy, sortDirection}: GetAllPostsQuery) {
+    async getAllPosts({sortBy, sortDirection, pageNumber, pageSize}: GetAllPostsQuery) {
         const posts =  await postsCollection.find()
             .sort({ [sortBy]: sortDirection })
+            .skip((pageNumber - 1) * pageSize)
+            .limit(pageSize)
             .toArray();
 
         return stripMongoDBId(posts);

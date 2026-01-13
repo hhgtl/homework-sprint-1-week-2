@@ -46,17 +46,28 @@ export const blogsQueryValidation = [
         .optional()
         .isString()
         .trim(),
+
+    query('pageNumber')
+        .optional()
+        .isString()
+        .trim(),
+
+    query('pageSize')
+        .optional()
+        .isString()
+        .trim(),
     inputValidationMiddleware
 ];
 
 
 postsRouter.get("/", blogsQueryValidation, async (req: Request, res: Response) => {
-    const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm.toString() : null
+    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
+    const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
+
     const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt'
     let sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc' as SortDirection;
 
-
-    const posts = await postsService.getAllPosts({sortBy, sortDirection});
+    const posts = await postsService.getAllPosts({sortBy, sortDirection, pageSize, pageNumber});
 
     res.status(200).send(posts)
 })

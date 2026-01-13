@@ -5,12 +5,14 @@ import {SortDirection} from "../routes/blogs-routes";
 export type GetAllBlogsQuery = {
     searchNameTerm: string | null,
     sortBy: string,
-    sortDirection: SortDirection
+    sortDirection: SortDirection,
+    pageSize: number
+    pageNumber: number
 }
 
 export const blogsService = {
-    async getAllBlogs({searchNameTerm, sortBy, sortDirection}: GetAllBlogsQuery) {
-        return await blogsRepositories.getAllBlogs({searchNameTerm, sortBy, sortDirection})
+    async getAllBlogs({searchNameTerm, sortBy, sortDirection, pageNumber, pageSize}: GetAllBlogsQuery) {
+        return await blogsRepositories.getAllBlogs({searchNameTerm, sortBy, sortDirection, pageNumber, pageSize})
     },
     async createBlog({name, description, websiteUrl}: {name: string, description: string, websiteUrl: string}) {
         const newBlog = {
