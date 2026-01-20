@@ -39,5 +39,8 @@ export const blogsService = {
     },
     async removeBlogById(id: string) {
         return blogsRepositories.removeBlogById(id)
+    },
+    async findBlogPostById(id: string) {
+        return await blogsRepositories.findBlogPostById(id)
     }
 }

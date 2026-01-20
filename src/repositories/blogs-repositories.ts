@@ -1,4 +1,4 @@
-import {blogsCollection, BlogType} from "../db/db";
+import {blogsCollection, BlogType, postsCollection} from "../db/db";
 import {stripMongoDBId} from "../common/utils/stripMongoDBId";
 import {WithId} from "mongodb";
 import {GetAllBlogsQuery} from "../services/blogs-service";
@@ -42,5 +42,8 @@ export const blogsRepositories = {
         const res = await blogsCollection.deleteOne({id})
 
         return res.deletedCount === 1
+    },
+    async findBlogPostById(id: string) {
+        return await postsCollection.find({blogId: id}).toArray();
     }
 }

@@ -74,7 +74,13 @@ blogsRouter.get("/", blogsQueryValidation, async (req: Request, res: Response) =
 
     const allBlogs = await blogsService.getAllBlogs({searchNameTerm, sortBy, sortDirection, pageNumber, pageSize})
 
-    res.status(200).send(allBlogs)
+    res.status(200).send(res.status(200).send({
+        pagesCount: pageNumber,
+        page: Array.isArray(allBlogs) ? Math.ceil(allBlogs.length  / pageSize) : 1 ,
+        pageSize: pageSize,
+        totalCount: Array.isArray(allBlogs) ? allBlogs.length : 1 ,
+        items: allBlogs,
+    }))
 })
 
 blogsRouter.post("/",
@@ -137,4 +143,17 @@ blogsRouter.delete("/:id",
     } else {
         res.status(404).send()
     }
+})
+
+
+blogsRouter.get("/:blogId/posts", async (req, res) => {
+    const blogId = req.params.blogId
+    const posts = await blogsService.findBlogPostById(blogId)
+
+    if (!posts) {
+        res.sendStatus(404)
+        return
+    }
+
+    res.status(200).send(posts)
 })
