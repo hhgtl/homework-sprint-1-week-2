@@ -5,7 +5,7 @@ import {runDb} from "./db/db";
 const app = express();
 setupApp(app);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, async () => {
     await runDb()

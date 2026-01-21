@@ -40,7 +40,7 @@ export const blogsService = {
     async removeBlogById(id: string) {
         return blogsRepositories.removeBlogById(id)
     },
-    async findBlogPostById(id: string) {
-        return await blogsRepositories.findBlogPostById(id)
+    async findBlogPostById({sortBy, sortDirection, blogId, pageNumber, pageSize}: Omit<GetAllBlogsQuery, 'searchNameTerm'> & {blogId: string}) {
+        return await blogsRepositories.findBlogPostById({sortBy, sortDirection, blogId, pageNumber, pageSize})
     }
 }

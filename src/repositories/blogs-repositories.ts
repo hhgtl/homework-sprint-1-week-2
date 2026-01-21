@@ -43,7 +43,12 @@ export const blogsRepositories = {
 
         return res.deletedCount === 1
     },
-    async findBlogPostById(id: string) {
-        return await postsCollection.find({blogId: id}).toArray();
+    async findBlogPostById({sortBy, sortDirection, blogId, pageNumber, pageSize}: Omit<GetAllBlogsQuery, 'searchNameTerm'> & {blogId: string}) {
+        return await postsCollection
+            .find({blogId})
+            .sort({ [sortBy]: sortDirection })
+            .skip((pageNumber - 1) * pageSize)
+            .limit(pageSize)
+            .toArray();
     }
 }

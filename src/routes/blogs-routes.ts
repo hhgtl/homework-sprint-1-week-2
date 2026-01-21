@@ -148,7 +148,13 @@ blogsRouter.delete("/:id",
 
 blogsRouter.get("/:blogId/posts", async (req, res) => {
     const blogId = req.params.blogId
-    const posts = await blogsService.findBlogPostById(blogId)
+    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
+    const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
+    const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt'
+    let sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc' as SortDirection;
+
+
+    const posts = await blogsService.findBlogPostById({blogId, sortBy, sortDirection, pageNumber, pageSize})
 
     if (!posts) {
         res.sendStatus(404)
