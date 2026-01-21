@@ -5,6 +5,12 @@ import { Request, Response } from 'express'
 import {authMiddleware} from "../middleware/auth-middleware";
 import {blogsService} from "../services/blogs-service";
 import {inputValidationMiddleware} from "../middleware/inputValidationMiddleware";
+import {postsService} from "../services/posts-service";
+import {
+    contentValidation,
+    shortDescriptionValidation,
+    titleValidation
+} from "./posts-routes";
 
 export const blogsRouter = Router({})
 
@@ -133,6 +139,7 @@ blogsRouter.put("/:id",
 
 blogsRouter.delete("/:id",
     authMiddleware,
+    idValidation,
     async (req, res) => {
     const id = req.params.id;
 
@@ -163,3 +170,21 @@ blogsRouter.get("/:blogId/posts", async (req, res) => {
 
     res.status(200).send(posts)
 })
+
+
+blogsRouter.post("/:id/posts",
+    authMiddleware,
+    titleValidation,
+    shortDescriptionValidation,
+    contentValidation,
+    idValidation,
+    inputValidationMiddleware,
+    async (req, res) => {
+        const title = req.body.title;
+        const shortDescription = req.body.shortDescription;
+        const content = req.body.content;
+        const blogId = req.params.id
+
+        const newPosts = await postsService.createPosts({title, blogId, content, shortDescription})
+        res.status(201).send(newPosts);
+    })
