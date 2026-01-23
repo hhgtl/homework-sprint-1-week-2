@@ -71,7 +71,7 @@ export const blogsQueryValidation = [
 export type SortDirection = 'asc' | 'desc';
 
 blogsRouter.get("/", blogsQueryValidation, async (req: Request, res: Response) => {
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 2;
+    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
     const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
 
     const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm.toString() : null
@@ -155,7 +155,7 @@ blogsRouter.delete("/:id",
 
 blogsRouter.get("/:blogId/posts", async (req, res) => {
     const blogId = req.params.blogId
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 2;
+    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
     const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
     const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt'
     let sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc' as SortDirection;
@@ -163,7 +163,7 @@ blogsRouter.get("/:blogId/posts", async (req, res) => {
 
     const posts = await blogsService.findBlogPostById({blogId, sortBy, sortDirection, pageNumber, pageSize})
 
-    if (!posts) {
+    if (!posts.length) {
         res.sendStatus(404)
         return
     }

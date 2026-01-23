@@ -61,7 +61,7 @@ export const blogsQueryValidation = [
 
 
 postsRouter.get("/", blogsQueryValidation, async (req: Request, res: Response) => {
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 2;
+    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
     const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
 
     const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt'
