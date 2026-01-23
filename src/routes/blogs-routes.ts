@@ -11,6 +11,7 @@ import {
     shortDescriptionValidation,
     titleValidation
 } from "./posts-routes";
+import {blogsCollection} from "../db/db";
 
 export const blogsRouter = Router({})
 
@@ -80,13 +81,7 @@ blogsRouter.get("/", blogsQueryValidation, async (req: Request, res: Response) =
 
     const allBlogs = await blogsService.getAllBlogs({searchNameTerm, sortBy, sortDirection, pageNumber, pageSize})
 
-    res.status(200).send(res.status(200).send({
-        pagesCount: pageNumber,
-        page: Array.isArray(allBlogs) ? Math.ceil(allBlogs.length  / pageSize) : 1 ,
-        pageSize: pageSize,
-        totalCount: Array.isArray(allBlogs) ? allBlogs.length : 1 ,
-        items: allBlogs,
-    }))
+    res.status(200).send(allBlogs)
 })
 
 blogsRouter.post("/",
@@ -160,10 +155,9 @@ blogsRouter.get("/:blogId/posts", async (req, res) => {
     const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt'
     let sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc' as SortDirection;
 
-
     const posts = await blogsService.findBlogPostById({blogId, sortBy, sortDirection, pageNumber, pageSize})
 
-    if (!posts.length) {
+    if (Array.isArray(posts?.items) && !posts?.items.length) {
         res.sendStatus(404)
         return
     }
