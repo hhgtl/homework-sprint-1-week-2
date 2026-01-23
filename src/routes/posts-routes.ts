@@ -69,13 +69,7 @@ postsRouter.get("/", blogsQueryValidation, async (req: Request, res: Response) =
 
     const posts = await postsService.getAllPosts({sortBy, sortDirection, pageSize, pageNumber});
 
-    res.status(200).send({
-        pagesCount: pageNumber,
-        page: Array.isArray(posts) ? Math.ceil(posts.length  / pageSize) : 1 ,
-        pageSize: pageSize,
-        totalCount: Array.isArray(posts) ? posts.length : 1 ,
-        items: posts,
-    })
+    res.status(200).send(posts)
 })
 
 postsRouter.post("/",

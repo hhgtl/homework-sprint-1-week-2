@@ -1,4 +1,4 @@
-import {postsCollection, PostType} from "../db/db";
+import {blogsCollection, postsCollection, PostType} from "../db/db";
 import {stripMongoDBId} from "../common/utils/stripMongoDBId";
 import {WithId} from "mongodb";
 import {GetAllPostsQuery} from "../services/posts-service";
@@ -7,13 +7,23 @@ import {GetAllPostsQuery} from "../services/posts-service";
 
 export const postsRepositories = {
     async getAllPosts({sortBy, sortDirection, pageNumber, pageSize}: GetAllPostsQuery) {
-        const posts =  await postsCollection.find()
+        const countPromise = postsCollection.countDocuments();
+
+        const postsPromise =  postsCollection.find()
             .sort({ [sortBy]: sortDirection })
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
             .toArray();
 
-        return stripMongoDBId(posts);
+        const [totalCount, posts] = await Promise.all([countPromise, postsPromise]);
+
+        return {
+            pagesCount: Math.ceil(totalCount / pageSize),
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCount,
+            items: stripMongoDBId(posts),
+        };
     },
     async createPosts(newPost: PostType) {
         await postsCollection.insertOne(newPost)
