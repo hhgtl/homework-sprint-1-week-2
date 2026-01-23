@@ -1,4 +1,4 @@
-import {blogsCollection, BlogType, postsCollection} from "../db/db";
+import {blogsCollection, BlogType, postsCollection, PostType} from "../db/db";
 import {stripMongoDBId} from "../common/utils/stripMongoDBId";
 import {WithId} from "mongodb";
 import {GetAllBlogsQuery} from "../services/blogs-service";
@@ -50,5 +50,15 @@ export const blogsRepositories = {
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
             .toArray();
-    }
+    },
+    async createPostsByBlogId(newPost: PostType) {
+        const blog = await blogsCollection.findOne({id: newPost.blogId})
+
+        if (blog) {
+            await postsCollection.insertOne(newPost)
+            return stripMongoDBId(newPost as WithId<typeof newPost>);
+        }
+
+        return blog
+    },
 }
