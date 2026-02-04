@@ -1,9 +1,8 @@
-import {blogsCollection, postsCollection, PostType} from "../../../db/db";
+import {blogsCollection, postsCollection} from "../../../db/db";
 import {stripMongoDBId} from "../../../common/utils/stripMongoDBId";
 import {WithId} from "mongodb";
 import {GetAllPostsQuery} from "../domain/posts-service";
-
-
+import {PostType} from "../types/post-type";
 
 export const postsRepositories = {
     async getAllPosts({sortBy, sortDirection, pageNumber, pageSize}: GetAllPostsQuery) {

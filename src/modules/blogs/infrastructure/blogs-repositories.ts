@@ -1,7 +1,9 @@
-import {blogsCollection, BlogType, postsCollection, PostType} from "../../../db/db";
+import {blogsCollection, postsCollection} from "../../../db/db";
 import {stripMongoDBId} from "../../../common/utils/stripMongoDBId";
 import {WithId} from "mongodb";
 import {GetAllBlogsQuery} from "../domain/blogs-service";
+import {BlogType} from "../types/blog-type";
+import {PostType} from "../../posts/types/post-type";
 
 export const blogsRepositories = {
     async getAllBlogs({sortBy, sortDirection, searchNameTerm, pageNumber, pageSize}: GetAllBlogsQuery) {

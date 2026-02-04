@@ -1,46 +1,19 @@
 import {Router} from "express";
-import {blogsRepositories} from "../infrastructure/blogs-repositories";
-import {body, FieldValidationError, param, query, validationResult} from "express-validator";
+import {query} from "express-validator";
 import { Request, Response } from 'express'
-import {authMiddleware} from "../../../middleware/auth-middleware";
+import {authMiddleware} from "../../../common/middleware/auth-middleware";
 import {blogsService} from "../domain/blogs-service";
-import {inputValidationMiddleware} from "../../../middleware/inputValidationMiddleware";
-import {postsService} from "../../posts/domain/posts-service";
-import {
-    contentValidation,
-    shortDescriptionValidation,
-    titleValidation
-} from "../../posts/api/posts-routes";
-import {blogsCollection} from "../../../db/db";
+import {inputValidationMiddleware} from "../../../common/middleware/inputValidationMiddleware";
 import {HttpStatuses} from "../../../common/types/http-statuses";
+import {descriptionValidation} from "../../../common/validation/description-validation";
+import {websiteUrlValidation} from "../../../common/validation/website-url-validation";
+import {nameValidation} from "../../../common/validation/name-validation";
+import {idValidation} from "../../../common/validation/id-validation";
+import {shortDescriptionValidation} from "../../../common/validation/short-description-validation";
+import {titleValidation} from "../../../common/validation/title-validation";
+import {contentValidation} from "../../../common/validation/content-validation";
 
 export const blogsRouter = Router({})
-
-export const idValidation = param('id')
-    .isString()
-    .trim()
-    .isLength({ min: 1 })
-    .withMessage('Id should be a string')
-
-export const nameValidation = body('name')
-    .isString()
-    .trim()
-    .isLength({ min: 1, max: 15 })
-    .withMessage('Name should be a string with max length 15');
-
-export const descriptionValidation = body('description')
-    .isString()
-    .trim()
-    .isLength({ min: 1, max: 500 })
-    .withMessage('Description should be a string with max length 500');
-
-export const websiteUrlValidation = body('websiteUrl')
-    .isString()
-    .trim()
-    .isLength({ min: 1, max: 100 })
-    .withMessage('Website URL max length is 100')
-    .matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/)
-    .withMessage('Invalid URL pattern');
 
 export const blogsQueryValidation = [
     query('sortDirection')

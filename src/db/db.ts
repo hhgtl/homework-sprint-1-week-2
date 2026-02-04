@@ -1,23 +1,7 @@
 import {MongoClient} from 'mongodb'
+import {BlogType} from "../modules/blogs/types/blog-type";
+import {PostType} from "../modules/posts/types/post-type";
 
-export type BlogType = {
-    id: string
-    name: string
-    description: string
-    websiteUrl: string
-    isMembership: boolean,
-    createdAt: string,
-}
-
-export type PostType = {
-    id: string,
-    title: string,
-    shortDescription: string,
-    content: string,
-    blogId: string,
-    blogName: string,
-    createdAt: string,
-}
 //local
 // const mongoUri = process.env.mongoURI || "mongodb://localhost:27017";
 
