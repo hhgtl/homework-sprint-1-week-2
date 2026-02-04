@@ -1,7 +1,7 @@
 import {randomUUID} from "crypto";
-import {blogsRepositories} from "../repositories/blogs-repositories";
-import {SortDirection} from "../routes/blogs-routes";
-import {postsRepositories} from "../repositories/posts-repositories";
+import {blogsRepositories} from "../infrastructure/blogs-repositories";
+import {SortDirection} from "../api/blogs-routes";
+import {postsRepositories} from "../../posts/infrastructure/posts-repositories";
 
 export type GetAllBlogsQuery = {
     searchNameTerm: string | null,

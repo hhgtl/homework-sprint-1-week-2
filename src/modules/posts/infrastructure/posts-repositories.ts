@@ -1,7 +1,7 @@
-import {blogsCollection, postsCollection, PostType} from "../db/db";
-import {stripMongoDBId} from "../common/utils/stripMongoDBId";
+import {blogsCollection, postsCollection, PostType} from "../../../db/db";
+import {stripMongoDBId} from "../../../common/utils/stripMongoDBId";
 import {WithId} from "mongodb";
-import {GetAllPostsQuery} from "../services/posts-service";
+import {GetAllPostsQuery} from "../domain/posts-service";
 
 
 

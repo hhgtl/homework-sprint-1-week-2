@@ -1,7 +1,7 @@
 import express, { Express } from "express";
-import {testingRouter} from "./routes/testing-routes";
-import {blogsRouter} from "./routes/blogs-routes";
-import {postsRouter} from "./routes/posts-routes";
+import {testingRouter} from "./modules/testing/api/testing-routes";
+import {blogsRouter} from "./modules/blogs/api/blogs-routes";
+import {postsRouter} from "./modules/posts/api/posts-routes";
 import {authMiddleware} from "./middleware/auth-middleware";
 
 export const setupApp = (app: Express) => {

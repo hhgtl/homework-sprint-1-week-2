@@ -1,7 +1,7 @@
 import {randomUUID} from "crypto";
-import {postsRepositories} from "../repositories/posts-repositories";
-import {blogsRepositories} from "../repositories/blogs-repositories";
-import {SortDirection} from "../routes/blogs-routes";
+import {postsRepositories} from "../infrastructure/posts-repositories";
+import {blogsRepositories} from "../../blogs/infrastructure/blogs-repositories";
+import {SortDirection} from "../../blogs/api/blogs-routes";
 
 export type GetAllPostsQuery = {
     sortBy: string,

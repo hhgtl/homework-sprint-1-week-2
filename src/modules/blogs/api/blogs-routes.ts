@@ -1,17 +1,17 @@
 import {Router} from "express";
-import {blogsRepositories} from "../repositories/blogs-repositories";
+import {blogsRepositories} from "../infrastructure/blogs-repositories";
 import {body, FieldValidationError, param, query, validationResult} from "express-validator";
 import { Request, Response } from 'express'
-import {authMiddleware} from "../middleware/auth-middleware";
-import {blogsService} from "../services/blogs-service";
-import {inputValidationMiddleware} from "../middleware/inputValidationMiddleware";
-import {postsService} from "../services/posts-service";
+import {authMiddleware} from "../../../middleware/auth-middleware";
+import {blogsService} from "../domain/blogs-service";
+import {inputValidationMiddleware} from "../../../middleware/inputValidationMiddleware";
+import {postsService} from "../../posts/domain/posts-service";
 import {
     contentValidation,
     shortDescriptionValidation,
     titleValidation
-} from "./posts-routes";
-import {blogsCollection} from "../db/db";
+} from "../../posts/api/posts-routes";
+import {blogsCollection} from "../../../db/db";
 
 export const blogsRouter = Router({})
 

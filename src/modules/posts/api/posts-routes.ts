@@ -1,9 +1,9 @@
 import {Request, Response, Router} from "express";
 import {body, FieldValidationError, query, validationResult} from "express-validator";
-import {authMiddleware} from "../middleware/auth-middleware";
-import {postsService} from "../services/posts-service";
-import {inputValidationMiddleware} from "../middleware/inputValidationMiddleware";
-import {SortDirection} from "./blogs-routes";
+import {authMiddleware} from "../../../middleware/auth-middleware";
+import {postsService} from "../domain/posts-service";
+import {inputValidationMiddleware} from "../../../middleware/inputValidationMiddleware";
+import {SortDirection} from "../../blogs/api/blogs-routes";
 
 export const postsRouter = Router({})
 
