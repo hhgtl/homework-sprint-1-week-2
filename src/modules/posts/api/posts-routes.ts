@@ -4,6 +4,7 @@ import {authMiddleware} from "../../../middleware/auth-middleware";
 import {postsService} from "../domain/posts-service";
 import {inputValidationMiddleware} from "../../../middleware/inputValidationMiddleware";
 import {SortDirection} from "../../blogs/api/blogs-routes";
+import {HttpStatuses} from "../../../common/types/http-statuses";
 
 export const postsRouter = Router({})
 
@@ -69,7 +70,7 @@ postsRouter.get("/", blogsQueryValidation, async (req: Request, res: Response) =
 
     const posts = await postsService.getAllPosts({sortBy, sortDirection, pageSize, pageNumber});
 
-    res.status(200).send(posts)
+    res.status(HttpStatuses.Success).send(posts)
 })
 
 postsRouter.post("/",
@@ -86,7 +87,7 @@ postsRouter.post("/",
         const blogId = req.body.blogId;
 
         const newPosts = await postsService.createPosts({title, blogId, content, shortDescription})
-        res.status(201).send(newPosts);
+        res.status(HttpStatuses.Created).send(newPosts);
     })
 
 
@@ -96,9 +97,9 @@ postsRouter.get("/:id", async (req, res) => {
     const blog = await postsService.findPostsById(id);
 
     if (blog) {
-        res.status(200).send(blog)
+        res.status(HttpStatuses.Success).send(blog)
     } else {
-        res.status(404).send()
+        res.status(HttpStatuses.NotFound).send()
     }
 })
 
@@ -118,9 +119,9 @@ postsRouter.put("/:id",
 
         const newPosts = await postsService.changePostsById(id, {title, blogId, content, shortDescription})
         if (newPosts) {
-            res.status(204).send();
+            res.status(HttpStatuses.NoContent).send();
         } else {
-            res.status(404).send()
+            res.status(HttpStatuses.NotFound).send()
         }
     })
 
@@ -132,8 +133,8 @@ postsRouter.delete("/:id",
     const post = await postsService.removePostsById(id);
 
     if (post) {
-        res.status(204).send()
+        res.status(HttpStatuses.NoContent).send()
     } else {
-        res.status(404).send()
+        res.status(HttpStatuses.NotFound).send()
     }
 })

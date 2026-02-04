@@ -12,6 +12,7 @@ import {
     titleValidation
 } from "../../posts/api/posts-routes";
 import {blogsCollection} from "../../../db/db";
+import {HttpStatuses} from "../../../common/types/http-statuses";
 
 export const blogsRouter = Router({})
 
@@ -81,7 +82,7 @@ blogsRouter.get("/", blogsQueryValidation, async (req: Request, res: Response) =
 
     const allBlogs = await blogsService.getAllBlogs({searchNameTerm, sortBy, sortDirection, pageNumber, pageSize})
 
-    res.status(200).send(allBlogs)
+    res.status(HttpStatuses.Success).send(allBlogs)
 })
 
 blogsRouter.post("/",
@@ -96,7 +97,7 @@ blogsRouter.post("/",
         const websiteUrl = req.body.websiteUrl;
 
         const newBlog = await blogsService.createBlog({description, name, websiteUrl});
-        res.status(201).send(newBlog);
+        res.status(HttpStatuses.Created).send(newBlog);
 })
 
 blogsRouter.get("/:id", async (req, res) => {
@@ -105,9 +106,9 @@ blogsRouter.get("/:id", async (req, res) => {
     const blog = await blogsService.findBlogById(id);
 
     if (blog) {
-        res.status(200).send(blog)
+        res.status(HttpStatuses.Success).send(blog)
     } else {
-        res.status(404).send()
+        res.status(HttpStatuses.NotFound).send()
     }
 })
 
@@ -126,9 +127,9 @@ blogsRouter.put("/:id",
 
     const blog = await blogsService.changeBlogById(id, {name, description, websiteUrl});
     if (blog) {
-        res.status(204).send(blog)
+        res.status(HttpStatuses.NoContent).send(blog)
     } else {
-        res.status(404).send()
+        res.status(HttpStatuses.NotFound).send()
     }
     })
 
@@ -141,9 +142,9 @@ blogsRouter.delete("/:id",
     const blog = await blogsService.removeBlogById(id);
 
     if (blog) {
-        res.status(204).send()
+        res.status(HttpStatuses.NoContent).send()
     } else {
-        res.status(404).send()
+        res.status(HttpStatuses.NotFound).send()
     }
 })
 
@@ -158,11 +159,11 @@ blogsRouter.get("/:blogId/posts", async (req, res) => {
     const posts = await blogsService.findBlogPostById({blogId, sortBy, sortDirection, pageNumber, pageSize})
 
     if (Array.isArray(posts?.items) && !posts?.items.length) {
-        res.sendStatus(404)
+        res.sendStatus(HttpStatuses.NotFound)
         return
     }
 
-    res.status(200).send(posts)
+    res.status(HttpStatuses.Success).send(posts)
 })
 
 
@@ -182,9 +183,9 @@ blogsRouter.post("/:id/posts",
         const newPosts = await blogsService.createPostsByBlogId({title, blogId, content, shortDescription})
 
         if (newPosts) {
-            res.status(201).send(newPosts);
+            res.status(HttpStatuses.Created).send(newPosts);
         }
 
-        res.status(404).send()
+        res.status(HttpStatuses.NotFound).send()
 
     })
