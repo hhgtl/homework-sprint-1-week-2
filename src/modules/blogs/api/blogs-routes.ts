@@ -12,6 +12,8 @@ import {idValidation} from "../../../common/validation/id-validation";
 import {shortDescriptionValidation} from "../../../common/validation/short-description-validation";
 import {titleValidation} from "../../../common/validation/title-validation";
 import {contentValidation} from "../../../common/validation/content-validation";
+import {blogsRepositoriesQuery} from "../infrastructure/blogs-repositories-query";
+import {getPaginationWithSortFields} from "../../../common/utils/get-pagination-with-sort-fields";
 
 export const blogsRouter = Router({})
 
@@ -43,17 +45,11 @@ export const blogsQueryValidation = [
     inputValidationMiddleware
 ];
 
-export type SortDirection = 'asc' | 'desc';
-
 blogsRouter.get("/", blogsQueryValidation, async (req: Request, res: Response) => {
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
-    const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
+    const {sortBy, sortDirection, pageNumber, pageSize} = getPaginationWithSortFields(req.query);
+    const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm.toString() : ''
 
-    const searchNameTerm = req.query.searchNameTerm ? req.query.searchNameTerm.toString() : null
-    const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt'
-    let sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc' as SortDirection;
-
-    const allBlogs = await blogsService.getAllBlogs({searchNameTerm, sortBy, sortDirection, pageNumber, pageSize})
+    const allBlogs = await blogsRepositoriesQuery.getAllBlogs({searchNameTerm, sortBy, sortDirection, pageNumber, pageSize})
 
     res.status(HttpStatuses.Success).send(allBlogs)
 })
@@ -76,7 +72,7 @@ blogsRouter.post("/",
 blogsRouter.get("/:id", async (req, res) => {
     const id = req.params.id;
 
-    const blog = await blogsService.findBlogById(id);
+    const blog = await blogsRepositoriesQuery.findBlogById(id);
 
     if (blog) {
         res.status(HttpStatuses.Success).send(blog)
@@ -123,13 +119,10 @@ blogsRouter.delete("/:id",
 
 
 blogsRouter.get("/:blogId/posts", async (req, res) => {
+    const {sortBy, sortDirection, pageNumber, pageSize} = getPaginationWithSortFields(req.query);
     const blogId = req.params.blogId
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
-    const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
-    const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt'
-    let sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc' as SortDirection;
 
-    const posts = await blogsService.findBlogPostById({blogId, sortBy, sortDirection, pageNumber, pageSize})
+    const posts = await blogsRepositoriesQuery.findBlogPostById({blogId, sortBy, sortDirection, pageNumber, pageSize})
 
     if (Array.isArray(posts?.items) && !posts?.items.length) {
         res.sendStatus(HttpStatuses.NotFound)

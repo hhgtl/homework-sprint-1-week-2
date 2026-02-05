@@ -9,6 +9,8 @@ import {titleValidation} from "../../../common/validation/title-validation";
 import {shortDescriptionValidation} from "../../../common/validation/short-description-validation";
 import { contentValidation } from "../../../common/validation/content-validation";
 import { blogIdValidation } from "../../../common/validation/blogId-validation";
+import {getPaginationWithSortFields} from "../../../common/utils/get-pagination-with-sort-fields";
+import {postsRepositoriesQuery} from "../infrastructure/posts-repositories-query";
 
 export const postsRouter = Router({})
 
@@ -16,12 +18,14 @@ export const blogsQueryValidation = [
     query('sortDirection')
         .optional()
         .isIn(['asc', 'desc'])
-        .withMessage('sortDirection must be asc or desc'),
+        .withMessage('sortDirection must be asc or desc')
+        .default('desc'),
 
     query('sortBy')
         .optional()
         .isString()
-        .trim(),
+        .trim()
+        .default('createdAt'),
 
     query('searchNameTerm')
         .optional()
@@ -31,24 +35,24 @@ export const blogsQueryValidation = [
     query('pageNumber')
         .optional()
         .isString()
-        .trim(),
+        .trim()
+        .isInt()
+        .default(1),
 
     query('pageSize')
         .optional()
         .isString()
-        .trim(),
+        .trim()
+        .isInt()
+        .default(10),
     inputValidationMiddleware
 ];
 
 
 postsRouter.get("/", blogsQueryValidation, async (req: Request, res: Response) => {
-    const pageNumber = req.query.pageNumber ? +req.query.pageNumber : 1;
-    const pageSize = req.query.pageSize ? +req.query.pageSize : 10;
+    const {sortBy, sortDirection, pageNumber, pageSize} = getPaginationWithSortFields(req.query);
 
-    const sortBy = req.query.sortBy ? req.query.sortBy.toString() : 'createdAt'
-    let sortDirection = req.query.sortDirection === 'asc' ? 'asc' : 'desc' as SortDirection;
-
-    const posts = await postsService.getAllPosts({sortBy, sortDirection, pageSize, pageNumber});
+    const posts = await postsRepositoriesQuery.getAllPosts({sortBy, sortDirection, pageSize, pageNumber});
 
     res.status(HttpStatuses.Success).send(posts)
 })
@@ -74,7 +78,7 @@ postsRouter.post("/",
 postsRouter.get("/:id", async (req, res) => {
     const id = req.params.id;
 
-    const blog = await postsService.findPostsById(id);
+    const blog = await postsRepositoriesQuery.findPostsById(id);
 
     if (blog) {
         res.status(HttpStatuses.Success).send(blog)

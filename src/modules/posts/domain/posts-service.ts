@@ -2,18 +2,9 @@ import {randomUUID} from "crypto";
 import {postsRepositories} from "../infrastructure/posts-repositories";
 import {blogsRepositories} from "../../blogs/infrastructure/blogs-repositories";
 import {SortDirection} from "../../blogs/api/blogs-routes";
-
-export type GetAllPostsQuery = {
-    sortBy: string,
-    sortDirection: SortDirection
-    pageSize: number
-    pageNumber: number
-}
+import {SortQueryFilterType} from "../../../common/types/sort-query-filter-type";
 
 export const postsService = {
-    async getAllPosts({sortBy, sortDirection, pageNumber, pageSize}: GetAllPostsQuery) {
-        return await postsRepositories.getAllPosts({sortBy, sortDirection, pageNumber, pageSize})
-    },
     async createPosts({title, shortDescription, content, blogId}: {title: string, shortDescription: string, content: string, blogId: string}) {
         const blog = await blogsRepositories.findBlogById(blogId)
         const blogName = blog && !Array.isArray(blog) ? blog.name : ''
@@ -29,9 +20,6 @@ export const postsService = {
         }
 
         return await postsRepositories.createPosts(newPost)
-    },
-    async findPostsById(id: string) {
-        return postsRepositories.findPostsById(id)
     },
     async changePostsById(id: string, body: {title: string, shortDescription: string, content: string, blogId: string}) {
         const payload = {
