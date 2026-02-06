@@ -3,7 +3,6 @@ import {query} from "express-validator";
 import {authMiddleware} from "../../../common/middleware/auth-middleware";
 import {postsService} from "../domain/posts-service";
 import {inputValidationMiddleware} from "../../../common/middleware/inputValidationMiddleware";
-import {SortDirection} from "../../blogs/api/blogs-routes";
 import {HttpStatuses} from "../../../common/types/http-statuses";
 import {titleValidation} from "../../../common/validation/title-validation";
 import {shortDescriptionValidation} from "../../../common/validation/short-description-validation";
@@ -11,45 +10,16 @@ import { contentValidation } from "../../../common/validation/content-validation
 import { blogIdValidation } from "../../../common/validation/blogId-validation";
 import {getPaginationWithSortFields} from "../../../common/utils/get-pagination-with-sort-fields";
 import {postsRepositoriesQuery} from "../infrastructure/posts-repositories-query";
+import {paginationQueryValidation} from "../../../common/validation/pagination-query-validation";
 
 export const postsRouter = Router({})
 
-export const blogsQueryValidation = [
-    query('sortDirection')
-        .optional()
-        .isIn(['asc', 'desc'])
-        .withMessage('sortDirection must be asc or desc')
-        .default('desc'),
-
-    query('sortBy')
-        .optional()
-        .isString()
-        .trim()
-        .default('createdAt'),
-
-    query('searchNameTerm')
-        .optional()
-        .isString()
-        .trim(),
-
-    query('pageNumber')
-        .optional()
-        .isString()
-        .trim()
-        .isInt()
-        .default(1),
-
-    query('pageSize')
-        .optional()
-        .isString()
-        .trim()
-        .isInt()
-        .default(10),
+export const postQueryValidation = [
+    ...paginationQueryValidation,
     inputValidationMiddleware
 ];
 
-
-postsRouter.get("/", blogsQueryValidation, async (req: Request, res: Response) => {
+postsRouter.get("/", postQueryValidation, async (req: Request, res: Response) => {
     const {sortBy, sortDirection, pageNumber, pageSize} = getPaginationWithSortFields(req.query);
 
     const posts = await postsRepositoriesQuery.getAllPosts({sortBy, sortDirection, pageSize, pageNumber});

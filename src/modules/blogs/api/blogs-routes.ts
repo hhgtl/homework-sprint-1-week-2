@@ -14,34 +14,17 @@ import {titleValidation} from "../../../common/validation/title-validation";
 import {contentValidation} from "../../../common/validation/content-validation";
 import {blogsRepositoriesQuery} from "../infrastructure/blogs-repositories-query";
 import {getPaginationWithSortFields} from "../../../common/utils/get-pagination-with-sort-fields";
+import {paginationQueryValidation} from "../../../common/validation/pagination-query-validation";
 
 export const blogsRouter = Router({})
 
 export const blogsQueryValidation = [
-    query('sortDirection')
-        .optional()
-        .isIn(['asc', 'desc'])
-        .withMessage('sortDirection must be asc or desc'),
-
-    query('sortBy')
-        .optional()
-        .isString()
-        .trim(),
-
+    ...paginationQueryValidation,
     query('searchNameTerm')
         .optional()
         .isString()
         .trim(),
 
-    query('pageNumber')
-        .optional()
-        .isString()
-        .trim(),
-
-    query('pageSize')
-        .optional()
-        .isString()
-        .trim(),
     inputValidationMiddleware
 ];
 
