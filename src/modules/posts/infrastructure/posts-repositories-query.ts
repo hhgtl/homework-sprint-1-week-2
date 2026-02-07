@@ -1,7 +1,9 @@
 import {postsCollection} from "../../../db/db";
 import {SortQueryFilterType} from "../../../common/types/sort-query-filter-type";
-import {PostType} from "../types/post-type";
-import {WithId} from "mongodb";
+import {PostDbType} from "../types/post-db-type";
+import {ObjectId, WithId} from "mongodb";
+import {BlogViewType} from "../../blogs/types/blog-view-type";
+import {PostViewType} from "../types/post-view-type";
 
 export const postsRepositoriesQuery = {
     async getAllPosts({sortBy, sortDirection, pageNumber, pageSize}: SortQueryFilterType) {
@@ -23,18 +25,18 @@ export const postsRepositoriesQuery = {
             items: posts.map((post) => this._getInView(post)),
         };
     },
-    async findPostsById(id: string) {
-        const post = await postsCollection.findOne({id})
+    async findPostsById(_id: ObjectId) {
+        const post = await postsCollection.findOne({_id})
         if (post !== null) {
             return this._getInView(post)
         }
         return post
     },
-    _getInView(post: WithId<PostType>): PostType {
+    _getInView(post: WithId<PostDbType>): PostViewType {
         return {
             id: post._id.toString(),
             title: post.title,
-            blogId: post.blogId,
+            blogId: post.blogId.toString(),
             blogName: post.blogName,
             createdAt: post.createdAt,
             content: post.content,

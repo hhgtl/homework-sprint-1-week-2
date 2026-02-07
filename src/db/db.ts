@@ -1,6 +1,6 @@
 import {MongoClient} from 'mongodb'
-import {BlogType} from "../modules/blogs/types/blog-type";
-import {PostType} from "../modules/posts/types/post-type";
+import {BlogDbType} from "../modules/blogs/types/blog-db-type";
+import {PostDbType} from "../modules/posts/types/post-db-type";
 
 //local
 // const mongoUri = process.env.mongoURI || "mongodb://localhost:27017";
@@ -13,8 +13,8 @@ const mongoUri = "mongodb+srv://petrosahal66:fMNc55JdIgAzx81t@cluster0.o6rzywd.m
 export const client = new MongoClient(mongoUri);
 
 export const db = client.db("blogger-platform")
-export const blogsCollection = db.collection<BlogType>("blogs");
-export const postsCollection = db.collection<PostType>("posts");
+export const blogsCollection = db.collection<BlogDbType>("blogs");
+export const postsCollection = db.collection<PostDbType>("posts");
 
 export async function runDb() {
     try {

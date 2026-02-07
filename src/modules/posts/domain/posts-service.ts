@@ -1,16 +1,13 @@
-import {randomUUID} from "crypto";
 import {postsRepositories} from "../infrastructure/posts-repositories";
 import {blogsRepositories} from "../../blogs/infrastructure/blogs-repositories";
-import {SortDirection} from "../../blogs/api/blogs-routes";
-import {SortQueryFilterType} from "../../../common/types/sort-query-filter-type";
+import {ObjectId} from "mongodb";
 
 export const postsService = {
-    async createPosts({title, shortDescription, content, blogId}: {title: string, shortDescription: string, content: string, blogId: string}) {
+    async createPosts({title, shortDescription, content, blogId}: {title: string, shortDescription: string, content: string, blogId: ObjectId}) {
         const blog = await blogsRepositories.findBlogById(blogId)
         const blogName = blog && !Array.isArray(blog) ? blog.name : ''
 
         const newPost = {
-            id: randomUUID(),
             title,
             shortDescription,
             content,
@@ -21,7 +18,7 @@ export const postsService = {
 
         return await postsRepositories.createPosts(newPost)
     },
-    async changePostsById(id: string, body: {title: string, shortDescription: string, content: string, blogId: string}) {
+    async changePostsById(_id: ObjectId, body: {title: string, shortDescription: string, content: string, blogId: ObjectId}) {
         const payload = {
             title: body.title,
             shortDescription: body.shortDescription,
@@ -29,9 +26,9 @@ export const postsService = {
             blogId: body.blogId,
         }
 
-        return await postsRepositories.changePostsById(id, payload)
+        return await postsRepositories.changePostsById(_id, payload)
     },
-    async removePostsById(id: string) {
-        return postsRepositories.removePostsById(id)
+    async removePostsById(_id: ObjectId) {
+        return postsRepositories.removePostsById(_id)
     }
 }

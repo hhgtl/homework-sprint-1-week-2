@@ -11,6 +11,7 @@ import { blogIdValidation } from "../../../common/validation/blogId-validation";
 import {getPaginationWithSortFields} from "../../../common/utils/get-pagination-with-sort-fields";
 import {postsRepositoriesQuery} from "../infrastructure/posts-repositories-query";
 import {paginationQueryValidation} from "../../../common/validation/pagination-query-validation";
+import {ObjectId} from "mongodb";
 
 export const postsRouter = Router({})
 
@@ -38,7 +39,7 @@ postsRouter.post("/",
         const title = req.body.title;
         const shortDescription = req.body.shortDescription;
         const content = req.body.content;
-        const blogId = req.body.blogId;
+        const blogId = new ObjectId(req.body.blogId);
 
         const newPosts = await postsService.createPosts({title, blogId, content, shortDescription})
         res.status(HttpStatuses.Created).send(newPosts);
@@ -46,9 +47,9 @@ postsRouter.post("/",
 
 
 postsRouter.get("/:id", async (req, res) => {
-    const id = req.params.id;
+    const _id = new ObjectId(req.params.id);
 
-    const blog = await postsRepositoriesQuery.findPostsById(id);
+    const blog = await postsRepositoriesQuery.findPostsById(_id);
 
     if (blog) {
         res.status(HttpStatuses.Success).send(blog)
@@ -65,13 +66,13 @@ postsRouter.put("/:id",
     blogIdValidation,
     inputValidationMiddleware,
     async (req: Request<{ id: string }>, res) => {
-        const id = req.params.id;
+        const _id = new ObjectId(req.params.id);
         const title = req.body.title;
         const shortDescription = req.body.shortDescription;
         const content = req.body.content;
         const blogId = req.body.blogId;
 
-        const newPosts = await postsService.changePostsById(id, {title, blogId, content, shortDescription})
+        const newPosts = await postsService.changePostsById(_id, {title, blogId, content, shortDescription})
         if (newPosts) {
             res.status(HttpStatuses.NoContent).send();
         } else {
@@ -82,9 +83,9 @@ postsRouter.put("/:id",
 postsRouter.delete("/:id",
     authMiddleware,
     async (req, res) => {
-    const id = req.params.id;
+    const _id = new ObjectId(req.params.id);
 
-    const post = await postsService.removePostsById(id);
+    const post = await postsService.removePostsById(_id);
 
     if (post) {
         res.status(HttpStatuses.NoContent).send()

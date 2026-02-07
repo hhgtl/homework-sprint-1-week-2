@@ -1,10 +1,12 @@
-import {GetAllBlogsQuery} from "../domain/blogs-service";
+// import {GetAllBlogsQuery} from "../domain/blogs-service";
 import {blogsCollection, postsCollection} from "../../../db/db";
 import {stripMongoDBId} from "../../../common/utils/stripMongoDBId";
 import {SortQueryFilterType} from "../../../common/types/sort-query-filter-type";
-import {WithId} from "mongodb";
-import {PostType} from "../../posts/types/post-type";
-import {BlogType} from "../types/blog-type";
+import {ObjectId, WithId} from "mongodb";
+import {PostDbType} from "../../posts/types/post-db-type";
+import {BlogDbType} from "../types/blog-db-type";
+import {BlogViewType} from "../types/blog-view-type";
+import {PostViewType} from "../../posts/types/post-view-type";
 
 export const blogsRepositoriesQuery = {
     async getAllBlogs({sortBy, sortDirection, searchNameTerm, pageNumber, pageSize}: SortQueryFilterType & {searchNameTerm: string}) {
@@ -33,8 +35,8 @@ export const blogsRepositoriesQuery = {
             items: docs.map(blog => this._getInBlogView(blog)),
         };
     },
-    async findBlogById(id: string) {
-        const blog = await blogsCollection.findOne({id})
+    async findBlogById(_id: ObjectId) {
+        const blog = await blogsCollection.findOne({_id})
 
         if (blog !== null) {
             return this._getInBlogView(blog);
@@ -42,7 +44,7 @@ export const blogsRepositoriesQuery = {
 
         return blog
     },
-    async findBlogPostById({sortBy, sortDirection, blogId, pageNumber, pageSize}: SortQueryFilterType & {blogId: string}) {
+    async findBlogPostById({sortBy, sortDirection, blogId, pageNumber, pageSize}: SortQueryFilterType & {blogId: ObjectId}) {
         const countPromise = postsCollection.countDocuments({blogId});
 
         const docsPromise = postsCollection
@@ -62,18 +64,18 @@ export const blogsRepositoriesQuery = {
             items: docs.map((blog) => this._getInPostView(blog)),
         };
     },
-    _getInPostView(post: WithId<PostType>): PostType {
+    _getInPostView(post: WithId<PostDbType>): PostViewType {
         return {
             id: post._id.toString(),
             title: post.title,
-            blogId: post.blogId,
+            blogId: post.blogId.toString(),
             blogName: post.blogName,
             createdAt: post.createdAt,
             content: post.content,
             shortDescription: post.shortDescription
         };
     },
-    _getInBlogView(blog: WithId<BlogType>): BlogType {
+    _getInBlogView(blog: WithId<BlogDbType>): BlogViewType {
         return {
             id: blog._id.toString(),
             name: blog.name,
