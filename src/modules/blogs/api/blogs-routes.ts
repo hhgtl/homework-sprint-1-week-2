@@ -57,7 +57,7 @@ blogsRouter.post("/",
         res.status(HttpStatuses.Created).send(blog);
 })
 
-blogsRouter.get("/:id", async (req, res) => {
+blogsRouter.get("/:id", idValidation, async (req: Request<{id: string}>, res) => {
     const _id = new ObjectId(req.params.id);
 
     const blog = await blogsRepositoriesQuery.findBlogById(_id);

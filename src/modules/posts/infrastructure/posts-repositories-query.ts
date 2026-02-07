@@ -27,6 +27,7 @@ export const postsRepositoriesQuery = {
     },
     async findPostsById(_id: ObjectId) {
         const post = await postsCollection.findOne({_id})
+
         if (post !== null) {
             return this._getInView(post)
         }

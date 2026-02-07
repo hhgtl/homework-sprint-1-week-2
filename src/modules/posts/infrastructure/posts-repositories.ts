@@ -14,8 +14,8 @@ export const postsRepositories = {
     //         .toArray();
     // },
     async createPosts(newPost: PostDbType) {
-        await postsCollection.insertOne(newPost)
-        return stripMongoDBId(newPost as WithId<typeof newPost>);
+        const res = await postsCollection.insertOne(newPost)
+        return res.insertedId
     },
     // async findPostsById(id: string) {
     //     return await postsCollection.findOne({id})

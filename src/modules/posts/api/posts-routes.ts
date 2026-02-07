@@ -1,5 +1,4 @@
 import {Request, Response, Router} from "express";
-import {query} from "express-validator";
 import {authMiddleware} from "../../../common/middleware/auth-middleware";
 import {postsService} from "../domain/posts-service";
 import {inputValidationMiddleware} from "../../../common/middleware/inputValidationMiddleware";
@@ -12,6 +11,7 @@ import {getPaginationWithSortFields} from "../../../common/utils/get-pagination-
 import {postsRepositoriesQuery} from "../infrastructure/posts-repositories-query";
 import {paginationQueryValidation} from "../../../common/validation/pagination-query-validation";
 import {ObjectId} from "mongodb";
+import {idValidation} from "../../../common/validation/id-validation";
 
 export const postsRouter = Router({})
 
@@ -41,12 +41,23 @@ postsRouter.post("/",
         const content = req.body.content;
         const blogId = new ObjectId(req.body.blogId);
 
-        const newPosts = await postsService.createPosts({title, blogId, content, shortDescription})
+        const postId = await postsService.createPosts({title, blogId, content, shortDescription})
+
+        if (!postId) {
+            return res.status(HttpStatuses.ServerError).send();
+        }
+
+        const newPosts = await postsRepositoriesQuery.findPostsById(postId);
+
+        if (!newPosts) {
+            return res.status(HttpStatuses.ServerError).send();
+        }
+
         res.status(HttpStatuses.Created).send(newPosts);
     })
 
 
-postsRouter.get("/:id", async (req, res) => {
+postsRouter.get("/:id", idValidation, async (req: Request<{ id: string }>, res) => {
     const _id = new ObjectId(req.params.id);
 
     const blog = await postsRepositoriesQuery.findPostsById(_id);
@@ -60,6 +71,7 @@ postsRouter.get("/:id", async (req, res) => {
 
 postsRouter.put("/:id",
     authMiddleware,
+    idValidation,
     titleValidation,
     shortDescriptionValidation,
     contentValidation,
@@ -82,6 +94,7 @@ postsRouter.put("/:id",
 
 postsRouter.delete("/:id",
     authMiddleware,
+    idValidation,
     async (req, res) => {
     const _id = new ObjectId(req.params.id);
 
