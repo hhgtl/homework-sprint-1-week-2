@@ -1,23 +1,7 @@
 import {MongoClient} from 'mongodb'
+import {BlogDbType} from "../modules/blogs/types/blog-db-type";
+import {PostDbType} from "../modules/posts/types/post-db-type";
 
-export type BlogType = {
-    id: string
-    name: string
-    description: string
-    websiteUrl: string
-    isMembership: boolean,
-    createdAt: string,
-}
-
-export type PostType = {
-    id: string,
-    title: string,
-    shortDescription: string,
-    content: string,
-    blogId: string,
-    blogName: string,
-    createdAt: string,
-}
 //local
 // const mongoUri = process.env.mongoURI || "mongodb://localhost:27017";
 
@@ -29,8 +13,8 @@ const mongoUri = "mongodb+srv://petrosahal66:fMNc55JdIgAzx81t@cluster0.o6rzywd.m
 export const client = new MongoClient(mongoUri);
 
 export const db = client.db("blogger-platform")
-export const blogsCollection = db.collection<BlogType>("blogs");
-export const postsCollection = db.collection<PostType>("posts");
+export const blogsCollection = db.collection<BlogDbType>("blogs");
+export const postsCollection = db.collection<PostDbType>("posts");
 
 export async function runDb() {
     try {
