@@ -8,12 +8,16 @@ export const usersRepositoriesQuery = {
     async getAllUsers({sortBy, sortDirection, pageNumber, pageSize, searchEmailTerm, searchLoginTerm}: SortQueryFilterType & {searchLoginTerm: string | null, searchEmailTerm: string | null}) {
         const filter: any = {};
 
-        if (searchLoginTerm) {
-            filter.login = { $regex: searchLoginTerm, $options: 'i' };
-        }
+        if (searchLoginTerm || searchEmailTerm) {
+            filter.$or = [];
 
-        if (searchEmailTerm) {
-            filter.email = { $regex: searchEmailTerm, $options: 'i' };
+            if (searchLoginTerm) {
+                filter.$or.push({ login: { $regex: searchLoginTerm, $options: 'i' } });
+            }
+
+            if (searchEmailTerm) {
+                filter.$or.push({ email: { $regex: searchEmailTerm, $options: 'i' } });
+            }
         }
 
         const countPromise = usersCollection.countDocuments(filter);
