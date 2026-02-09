@@ -14,7 +14,7 @@ authRouter.post('/login',authPasswordValidation, authLoginOrEmailValidation, asy
     const user = await authService.checkUserCredentials({loginOrEmail, password});
 
     if (!user) {
-        return res.status(HttpStatuses.BadRequest).send({})
+        return res.status(HttpStatuses.Unauthorized).send({})
     }
 
     res.status(HttpStatuses.NoContent).send({})
