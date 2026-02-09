@@ -41,7 +41,7 @@ usersRouter.get('/', authMiddleware, usersQueryValidation, async (req: Request, 
 })
 
 
-usersRouter.post('/', authMiddleware, loginValidation, passwordValidation, emailValidation, async (req, res) => {
+usersRouter.post('/', authMiddleware, loginValidation, passwordValidation, emailValidation, inputValidationMiddleware, async (req, res) => {
     const login = req.body.login;
     const password = req.body.password;
     const email = req.body.email;
