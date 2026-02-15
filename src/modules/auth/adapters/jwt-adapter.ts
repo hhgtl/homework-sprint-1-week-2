@@ -10,7 +10,7 @@ export const jwtAdapter = {
 
     verifyToken(token: string) {
         try {
-            return jwt.verify(token, SECRET) as {data: { userId: string }};
+            return jwt.verify(token, SECRET) as { userId: string };
         } catch (error) {
             console.error("Token verify some error");
             return null;

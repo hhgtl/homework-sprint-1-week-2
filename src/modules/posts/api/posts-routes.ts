@@ -12,6 +12,12 @@ import {postsRepositoriesQuery} from "../infrastructure/posts-repositories-query
 import {paginationQueryValidation} from "../../../common/validation/pagination-query-validation";
 import {ObjectId} from "mongodb";
 import {idValidation} from "../../../common/validation/id-validation";
+import {authJwtMiddleware} from "../../../common/middleware/authJwtMiddleware";
+import {usersService} from "../../users/domain/users-service";
+import {authService} from "../../auth/domain/auth-service";
+import {usersRepositoriesQuery} from "../../users/infrastructure/users-repositories-query";
+import {commentsService} from "../../comments/domain/comments-service";
+import {commentsRepositoriesQuery} from "../../comments/infrastructure/comments-repositories-query";
 
 export const postsRouter = Router({})
 
@@ -106,3 +112,33 @@ postsRouter.delete("/:id",
         res.status(HttpStatuses.NotFound).send()
     }
 })
+
+
+postsRouter.post("/:postId/comments",
+    authJwtMiddleware,
+    contentValidation,
+    inputValidationMiddleware,
+    async (req, res) => {
+        const content = req.body.content;
+        const userId = req?.userId;
+
+        if (!userId) {
+            return res.status(HttpStatuses.Unauthorized).send();
+        }
+
+        const userInfo = await usersRepositoriesQuery.findUserById(content.userId);
+
+        if (!userInfo) {
+            return res.status(HttpStatuses.Unauthorized).send();
+        }
+
+        const createdCommentId = await commentsService.createNewComment({content, userId, userLogin: userInfo.login})
+
+        const comment = await commentsRepositoriesQuery.findCommentById(createdCommentId);
+
+        if (!comment) {
+            return res.status(HttpStatuses.Unauthorized).send();
+        }
+
+        res.status(HttpStatuses.Success).send({userId, content});
+    })

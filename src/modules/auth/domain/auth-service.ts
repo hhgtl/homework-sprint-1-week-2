@@ -40,7 +40,7 @@ export const authService = {
                 };
             }
 
-            const {userId} = payload.data
+            const {userId} = payload
 
             const user = await usersRepositoriesQuery.findUserById(new ObjectId(userId))
 

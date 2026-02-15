@@ -14,6 +14,7 @@ export const setupApp = (app: Express) => {
     app.use('/posts', postsRouter);
     app.use('/users', usersRouter);
     app.use('/auth', authRouter);
+    app.use('/comments', authRouter);
 
     app.get("/", (req, res) => {
         res.send("Hello World!");

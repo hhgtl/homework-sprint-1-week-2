@@ -12,5 +12,6 @@
   },
   "include": ["src/**/*"],
   "exclude": ["__tests__", "dist", "node_modules"],
-  "sourceMap": true
+  "sourceMap": true,
+  "files": ["src/common/types/index.d.ts"]
 }
