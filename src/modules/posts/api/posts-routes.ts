@@ -19,6 +19,7 @@ import {usersRepositoriesQuery} from "../../users/infrastructure/users-repositor
 import {commentsService} from "../../comments/domain/comments-service";
 import {commentsRepositoriesQuery} from "../../comments/infrastructure/comments-repositories-query";
 import {postIdValidation} from "../validation/postIdValidation";
+import {commentsContentValidation} from "../../comments/validation/comments-content-validation";
 
 export const postsRouter = Router({})
 
@@ -134,7 +135,7 @@ postsRouter.get("/:postId/comments",
 
 postsRouter.post("/:postId/comments",
     authJwtMiddleware,
-    contentValidation,
+    commentsContentValidation,
     postIdValidation,
     inputValidationMiddleware,
     async (req, res) => {

@@ -8,13 +8,14 @@ import {commentsService} from "../domain/comments-service";
 import {HttpStatuses} from "../../../common/types/http-statuses";
 import {commentsRepositories} from "../infrastructure/comments-repositories";
 import {commentsRepositoriesQuery} from "../infrastructure/comments-repositories-query";
+import {commentsContentValidation} from "../validation/comments-content-validation";
 
 export const commentsRoutes = Router({})
 
 
 commentsRoutes.put("/:commentId",
     authJwtMiddleware,
-    contentValidation,
+    commentsContentValidation,
     commentIdValidation,
     inputValidationMiddleware,
     async (req,res)=> {
