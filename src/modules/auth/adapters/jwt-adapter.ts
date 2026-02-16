@@ -4,7 +4,7 @@ const SECRET = 'MY_SECRET_PASSWORD'
 
 export const jwtAdapter = {
     createToken({userId}: {userId: string}) {
-        return jwt.sign({userId}, SECRET, { expiresIn: '12h' });
+        return jwt.sign({userId}, SECRET, { expiresIn: '30d' });
 
     },
 

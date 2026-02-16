@@ -5,6 +5,8 @@ import {commentIdValidation} from "../validation/commentId-validation";
 import {authJwtMiddleware} from "../../../common/middleware/authJwtMiddleware";
 import {ObjectId} from "mongodb";
 import {commentsService} from "../domain/comments-service";
+import {HttpStatuses} from "../../../common/types/http-statuses";
+import {commentsRepositories} from "../infrastructure/comments-repositories";
 
 export const commentsRoutes = Router({})
 
@@ -21,14 +23,48 @@ commentsRoutes.put("/:commentId",
 
     const payload = await commentsService.changeCommentById({commentId, userId, content});
 
-    return res.status(200).send(payload);
-
+        if (payload.status === HttpStatuses.Success) {
+            return res.status(HttpStatuses.NoContent).send();
+        } else if (payload.status === HttpStatuses.NotFound) {
+            return res.status(HttpStatuses.NotFound).send();
+        } else if (payload.status === HttpStatuses.Forbidden) {
+            return res.status(HttpStatuses.Forbidden).send();
+        }
 
 
 })
 
 //
-// commentsRoutes.delete((req,res)=> {})
-//
-//
-// commentsRoutes.get((req,res)=> {})
+commentsRoutes.delete("/:commentId",
+    authJwtMiddleware,
+    commentIdValidation,
+    inputValidationMiddleware,
+    async (req,res)=> {
+        const commentId = new ObjectId(req.params.commentId);
+        const userId = new ObjectId(req.userId);
+
+        const payload = await commentsService.deleteComment({commentId, userId});
+
+        if (payload.status === HttpStatuses.Success) {
+            return res.status(HttpStatuses.NoContent).send();
+        } else if (payload.status === HttpStatuses.NotFound) {
+            return res.status(HttpStatuses.NotFound).send();
+        } else if (payload.status === HttpStatuses.Forbidden) {
+            return res.status(HttpStatuses.Forbidden).send();
+        }
+})
+
+commentsRoutes.get("/:commentId",
+    commentIdValidation,
+    inputValidationMiddleware,
+    async (req,res)=> {
+        const commentId = new ObjectId(req.params.commentId);
+        const comment = await commentsRepositories.findCommentById(commentId);
+
+        if (!comment) {
+            return res.status(HttpStatuses.NotFound).send();
+        }
+
+        return res.status(HttpStatuses.Success).send(comment);
+    }
+)
