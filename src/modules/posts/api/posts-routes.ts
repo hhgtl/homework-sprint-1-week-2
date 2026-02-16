@@ -126,6 +126,12 @@ postsRouter.get("/:postId/comments",
         const {sortBy, sortDirection, pageNumber, pageSize} = getPaginationWithSortFields(req.query);
         const postId = new ObjectId(req.params.postId);
 
+        const post = await postsRepositoriesQuery.findPostsById(postId);
+
+        if (!post) {
+            return res.status(HttpStatuses.NotFound).send();
+        }
+
         const comments = await commentsRepositoriesQuery.findCommentByPostId({sortBy, sortDirection, pageNumber, pageSize, postId})
 
         res.status(HttpStatuses.Success).send(comments)
