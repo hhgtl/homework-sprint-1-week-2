@@ -166,5 +166,5 @@ postsRouter.post("/:postId/comments",
             return res.status(HttpStatuses.BadRequest).send();
         }
 
-        res.status(HttpStatuses.Success).send(comment);
+        res.status(HttpStatuses.Created).send(comment);
     })

@@ -7,6 +7,7 @@ import {ObjectId} from "mongodb";
 import {commentsService} from "../domain/comments-service";
 import {HttpStatuses} from "../../../common/types/http-statuses";
 import {commentsRepositories} from "../infrastructure/comments-repositories";
+import {commentsRepositoriesQuery} from "../infrastructure/comments-repositories-query";
 
 export const commentsRoutes = Router({})
 
@@ -59,7 +60,7 @@ commentsRoutes.get("/:commentId",
     inputValidationMiddleware,
     async (req,res)=> {
         const commentId = new ObjectId(req.params.commentId);
-        const comment = await commentsRepositories.findCommentById(commentId);
+        const comment = await commentsRepositoriesQuery.findCommentById(commentId);
 
         if (!comment) {
             return res.status(HttpStatuses.NotFound).send();
