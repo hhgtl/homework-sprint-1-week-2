@@ -142,7 +142,7 @@ postsRouter.post("/:postId/comments",
         const userId = new ObjectId(req?.userId);
         const postId = new ObjectId(req.params.postId)
 
-        const post = postsRepositoriesQuery.findPostsById(postId);
+        const post = await postsRepositoriesQuery.findPostsById(postId);
 
         if (!post) {
             return res.status(HttpStatuses.NotFound).send();
