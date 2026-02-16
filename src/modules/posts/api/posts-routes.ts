@@ -18,6 +18,7 @@ import {authService} from "../../auth/domain/auth-service";
 import {usersRepositoriesQuery} from "../../users/infrastructure/users-repositories-query";
 import {commentsService} from "../../comments/domain/comments-service";
 import {commentsRepositoriesQuery} from "../../comments/infrastructure/comments-repositories-query";
+import {postIdValidation} from "../validation/postIdValidation";
 
 export const postsRouter = Router({})
 
@@ -114,31 +115,56 @@ postsRouter.delete("/:id",
 })
 
 
+
+
+postsRouter.get("/:postId/comments",
+    postIdValidation,
+    ...paginationQueryValidation,
+    inputValidationMiddleware,
+    async (req, res) => {
+        const {sortBy, sortDirection, pageNumber, pageSize} = getPaginationWithSortFields(req.query);
+        const postId = new ObjectId(req.params.postId);
+
+        const comments = await commentsRepositoriesQuery.findCommentByPostId({sortBy, sortDirection, pageNumber, pageSize, postId})
+
+        res.status(HttpStatuses.Success).send(comments)
+    })
+
+
+
 postsRouter.post("/:postId/comments",
     authJwtMiddleware,
     contentValidation,
+    postIdValidation,
     inputValidationMiddleware,
     async (req, res) => {
         const content = req.body.content;
-        const userId = req?.userId;
+        const userId = new ObjectId(req?.userId);
+        const postId = new ObjectId(req.params.postId)
+
+        const post = postsRepositoriesQuery.findPostsById(postId);
+
+        if (!post) {
+            return res.status(HttpStatuses.NotFound).send();
+        }
 
         if (!userId) {
-            return res.status(HttpStatuses.Unauthorized).send();
+            return res.status(HttpStatuses.BadRequest).send();
         }
 
-        const userInfo = await usersRepositoriesQuery.findUserById(content.userId);
+        const userInfo = await usersRepositoriesQuery.findUserById(userId);
 
         if (!userInfo) {
-            return res.status(HttpStatuses.Unauthorized).send();
+            return res.status(HttpStatuses.BadRequest).send();
         }
 
-        const createdCommentId = await commentsService.createNewComment({content, userId, userLogin: userInfo.login})
+        const createdCommentId = await commentsService.createNewComment({postId, content, userId, userLogin: userInfo.login})
 
         const comment = await commentsRepositoriesQuery.findCommentById(createdCommentId);
 
         if (!comment) {
-            return res.status(HttpStatuses.Unauthorized).send();
+            return res.status(HttpStatuses.BadRequest).send();
         }
 
-        res.status(HttpStatuses.Success).send({userId, content});
+        res.status(HttpStatuses.Success).send(comment);
     })

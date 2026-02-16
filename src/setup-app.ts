@@ -5,6 +5,7 @@ import {postsRouter} from "./modules/posts/api/posts-routes";
 import {authMiddleware} from "./common/middleware/auth-middleware";
 import {usersRouter} from "./modules/users/api/users-routes";
 import {authRouter} from "./modules/auth/api/auth-routes";
+import {commentsRoutes} from "./modules/comments/api/comments-routes";
 
 export const setupApp = (app: Express) => {
     app.use(express.json());
@@ -14,7 +15,7 @@ export const setupApp = (app: Express) => {
     app.use('/posts', postsRouter);
     app.use('/users', usersRouter);
     app.use('/auth', authRouter);
-    app.use('/comments', authRouter);
+    app.use('/comments', commentsRoutes);
 
     app.get("/", (req, res) => {
         res.send("Hello World!");

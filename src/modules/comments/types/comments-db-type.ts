@@ -1,8 +1,11 @@
+import {ObjectId} from "mongodb";
+
 export type CommentsDbType = {
     "content": string,
     "commentatorInfo": {
-        "userId": string,
+        "userId": ObjectId,
         "userLogin": string
     },
     "createdAt": string
+    postId: ObjectId
 }
