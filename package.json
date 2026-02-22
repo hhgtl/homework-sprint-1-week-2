@@ -9,6 +9,8 @@
     "jest": "jest -i",
     "lint": "eslint --fix .",
     "format": "prettier --write .",
+    "test": "jest --config src/jest.config.js",
+    "test-w": "jest --config src/jest.config.js --watch",
     "deploy to vercel": "vercel --prod"
   },
   "keywords": [],
@@ -22,7 +24,8 @@
     "express": "^5.2.1",
     "express-validator": "^7.3.1",
     "jsonwebtoken": "^9.0.3",
-    "mongodb": "^7.0.0"
+    "mongodb": "^7.0.0",
+    "mongoose": "^9.2.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

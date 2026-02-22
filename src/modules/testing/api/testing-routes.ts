@@ -4,7 +4,7 @@ import {testingRepositories} from "../infrastructure/testing-repositories";
 export const testingRouter = Router({})
 
 testingRouter.delete("/all-data", async (req: Request, res: Response) => {
-    await testingRepositories.removeAllVideo()
+    await testingRepositories.removeAllData()
 
     res.status(204).send()
 })
