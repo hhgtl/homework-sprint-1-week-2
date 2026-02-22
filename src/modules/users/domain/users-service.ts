@@ -1,6 +1,8 @@
 import {usersRepositories} from "../infrastructure/users-repositories";
 import {ObjectId} from "mongodb";
 import {bcryptService} from "../../auth/adapters/hash-adapter";
+import {Result} from "../../../common/types/result";
+import {HttpStatuses} from "../../../common/types/http-statuses";
 
 type CreateUserDto = {
     email: string;
@@ -9,7 +11,7 @@ type CreateUserDto = {
 }
 
 export const usersService = {
-    createUser: async ({login, email, password}: CreateUserDto) => {
+    createUser: async ({login, email, password}: CreateUserDto): Promise<Result<ObjectId | null>> => {
         const errorMessages = []
         const isEmailUnique = await usersRepositories.findUserByEmail(email)
         const isLoginUnique = await usersRepositories.findUserByLogin(login)
@@ -23,7 +25,11 @@ export const usersService = {
         }
 
         if (errorMessages.length > 0) {
-            return errorMessages;
+            return {
+                status: HttpStatuses.BadRequest,
+                extensions: errorMessages,
+                data: null
+            }
         }
 
         const hashedPassword = await bcryptService.generateHash(password)
@@ -35,7 +41,13 @@ export const usersService = {
             createdAt: new Date(),
         }
 
-        return await usersRepositories.createUser(newUser);
+        const userId = await usersRepositories.createUser(newUser);
+
+        return {
+            status: HttpStatuses.BadRequest,
+            extensions: errorMessages,
+            data: userId
+        }
     },
     deleteUserById: async (_id: ObjectId) => {
         return await usersRepositories.deleteUserById(_id);

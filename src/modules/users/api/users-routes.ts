@@ -46,20 +46,19 @@ usersRouter.post('/', authMiddleware, loginValidation, passwordValidation, email
     const password = req.body.password;
     const email = req.body.email;
 
-    const userId = await usersService.createUser({login, email, password})
+    const payload = await usersService.createUser({login, email, password})
 
-    if (Array.isArray(userId)) {
-        return res.status(HttpStatuses.BadRequest).send(userId)
+    if (payload.status !== HttpStatuses.Success) {
+        return res.status(payload.status).send(payload.extensions)
     }
 
-    if (!userId) {
-        return res.status(HttpStatuses.ServerError)
+    if (payload.status === HttpStatuses.Success && payload.data !== null) {
+        const user = await usersRepositoriesQuery.findUserById(payload.data)
+
+        res.status(HttpStatuses.Created).send(user)
     }
 
-    const user = await usersRepositoriesQuery.findUserById(userId)
-
-
-    res.status(HttpStatuses.Created).send(user)
+    return res.status(HttpStatuses.ServerError)
 })
 
 
