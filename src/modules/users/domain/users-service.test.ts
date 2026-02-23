@@ -60,4 +60,31 @@ describe('integration tests for users-service', () => {
         });
     })
 
+    describe('delete user', () => {
+        let userToDeleteId: ObjectId;
+
+        beforeAll(async () => {
+            await testingRepositories.removeAllData()
+
+            const payload = await usersService.createUser({
+                login: 'userForDelete',
+                email: 'delete@gmail.com',
+                password: 'password123'
+            })
+            userToDeleteId = payload.data!
+        })
+
+        it('should return status code 204 if user be deleted', async () => {
+            const payload = await usersService.deleteUserById(userToDeleteId)
+
+            expect(payload.status).toBe(HttpStatuses.NoContent)
+
+        });
+
+        it('should return status code 404 if userId be not found', async () => {
+            const payload = await usersService.deleteUserById(userToDeleteId)
+
+            expect(payload.status).toBe(HttpStatuses.NotFound)
+        });
+    })
 })

@@ -49,7 +49,22 @@ export const usersService = {
             data: userId
         }
     },
-    deleteUserById: async (_id: ObjectId) => {
-        return await usersRepositories.deleteUserById(_id);
+    deleteUserById: async (_id: ObjectId): Promise<Result> => {
+        const isUserDeleted = await usersRepositories.deleteUserById(_id);
+
+        if (isUserDeleted) {
+            return {
+                status: HttpStatuses.NoContent,
+                extensions: [],
+                data: null
+            }
+        }
+
+         return {
+            status: HttpStatuses.NotFound,
+            extensions: [],
+            data: null
+        }
+
     }
 }

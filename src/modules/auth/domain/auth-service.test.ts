@@ -2,7 +2,7 @@ import {testingRepositories} from "../../testing/infrastructure/testing-reposito
 import {client} from "../../../db/db";
 
 
-describe('integration tests for blogs-service', () => {
+describe('integration tests for auth-service', () => {
 
     describe('create blogs', () => {
         beforeAll(async () => {
