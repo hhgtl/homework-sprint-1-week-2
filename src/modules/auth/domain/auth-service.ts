@@ -4,10 +4,11 @@ import {HttpStatuses} from "../../../common/types/http-statuses";
 import {jwtAdapter} from "../adapters/jwt-adapter";
 import {usersRepositoriesQuery} from "../../users/infrastructure/users-repositories-query";
 import {ObjectId} from "mongodb";
+import {Result} from "../../../common/types/result";
 
 
 export const authService = {
-    async loginUser({loginOrEmail, password}: {loginOrEmail: string, password: string}) {
+    async loginUser({loginOrEmail, password}: {loginOrEmail: string, password: string}): Promise<Result<{accessToken: string} | null>> {
 
         const result =  await this.checkUserCredentials({loginOrEmail, password});
 
@@ -28,7 +29,7 @@ export const authService = {
             extensions: [],
         };
     },
-    async me(jwtToken: string) {
+    async me(jwtToken: string): Promise<Result<{login: string, email: string, userId: string} | null>> {
         try {
             const payload = jwtAdapter.verifyToken(jwtToken)
 
