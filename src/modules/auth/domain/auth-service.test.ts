@@ -3,13 +3,13 @@ import {client} from "../../../db/db";
 import {usersService} from "../../users/domain/users-service";
 import {ObjectId} from "mongodb";
 import {authService} from "./auth-service";
+import {HttpStatuses} from "../../../common/types/http-statuses";
 
 // jest.setTimeout(100_000_000);
 
 describe('integration tests for auth-service', () => {
 
     describe('login user', () => {
-        let accessToken: string | null;
         let userId: ObjectId | null;
         let login: string = 'userForDelete';
         let email: string = 'delete@gmail.com';
@@ -59,8 +59,12 @@ describe('integration tests for auth-service', () => {
             expect(userData?.userId).toBe(userId!.toString())
         });
 
-        it('should return true if email is incorrect', async () => {
+        it('should return true if email or login is incorrect', async () => {
+            const {data, errorMessage, status} = await authService.loginUser({loginOrEmail: 'incorrect loginOrEmail', password: password})
 
+            expect(data).toBeNull();
+            expect(errorMessage).toBe('Unauthorized');
+            expect(status).toBe(HttpStatuses.Unauthorized);
         })
     })
 
