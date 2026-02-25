@@ -13,8 +13,7 @@ export const nodemailerAdapter = {
         const info = await transporter.sendMail({
             from: '"Petro" <emailfordevdevovic@gmail.com>',
             to: email,
-            subject: "Hello ✔",
-            text: "Hello world?",
+            subject: "register",
             html: `<h1>Thank for your registration</h1>
                  <p>To finish registration please follow the link below:
                      <a href="https://somesite.com/confirm-email?code=${confirmationCode}">complete registration</a>
