@@ -24,6 +24,7 @@ commentsRoutes.delete("/:commentId",
     deleteCommentByIdHandler)
 
 commentsRoutes.get("/:commentId",
+    authJwtMiddleware,
     commentIdValidation,
     inputValidationMiddleware,
     getCommentByIdHandler

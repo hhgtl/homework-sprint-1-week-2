@@ -11,7 +11,7 @@ export const registrationEmailResendingHandler = async (req: Request, res: Respo
 
     if (payload.status === ResultStatus.BadRequest) {
         return res.status(HttpStatuses.BadRequest).send({
-            "errorsMessages": payload.extensions
+            errorsMessages: payload.extensions
         })
     }
 
