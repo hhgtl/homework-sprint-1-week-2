@@ -18,7 +18,7 @@ export const usersService = {
         const errorMessages = []
         const isEmailUnique = await usersRepositories.findUserByEmail(email)
         const isLoginUnique = await usersRepositories.findUserByLogin(login)
-
+debugger
         if (isEmailUnique) {
             errorMessages.push({field: 'email', message: 'email should be unique'})
         }
@@ -45,14 +45,14 @@ export const usersService = {
             emailConfirmation: {
                 confirmationCode: randomUUID(),
                 confirmationCodeExpirationDate: addHours(new Date(), 12),
-                isConfirmed: false,
+                isConfirmed: true,
             }
         }
 
         const userId = await usersRepositories.createUser(newUser);
 
         return {
-            status: HttpStatuses.BadRequest,
+            status: HttpStatuses.Success,
             extensions: errorMessages,
             data: userId
         }
