@@ -142,7 +142,7 @@ export const authService = {
             return {
                 status: ResultStatus.BadRequest,
                 data: null,
-                extensions: [{field: 'code is confirmed', message: 'bla bla'}],
+                extensions: [{field: 'code', message: 'bla bla'}],
             };
         }
 
@@ -150,7 +150,7 @@ export const authService = {
             return {
                 status: ResultStatus.BadRequest,
                 data: null,
-                extensions: [{field: 'expired code time', message: 'bla bla'}],
+                extensions: [{field: 'code', message: 'bla bla'}],
             };
         }
 
@@ -168,7 +168,7 @@ export const authService = {
         if (!user) {
             return {
                 status: ResultStatus.BadRequest,
-                extensions: [{field: 'user not found', message: ''}],
+                extensions: [{field: 'email', message: ''}],
                 data: null
             }
         }
@@ -176,7 +176,7 @@ export const authService = {
         if (user.emailConfirmation.isConfirmed) {
             return {
                 status: ResultStatus.BadRequest,
-                extensions: [{field: 'code is confirmed', message: 'bla'}],
+                extensions: [{field: 'code', message: 'bla'}],
                 data: null
             }
         }
@@ -190,7 +190,7 @@ export const authService = {
         if (!isUpdatedConfirmationCode) {
             return {
                 status: ResultStatus.BadRequest,
-                extensions: [{field: 'expired code time', message: 'bla bla'}],
+                extensions: [{field: 'code', message: 'bla bla'}],
                 data: null
             }
         }
