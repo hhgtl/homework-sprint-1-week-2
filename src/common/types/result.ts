@@ -1,4 +1,5 @@
 import {HttpStatuses} from "./http-statuses";
+import {ResultStatus} from "./result-status";
 
 type ExtensionType = {
     field: string | null;
@@ -6,7 +7,7 @@ type ExtensionType = {
 };
 
 export type Result<T = null> = {
-    status: HttpStatuses;
+    status: HttpStatuses | ResultStatus;
     errorMessage?: string;
     extensions: ExtensionType[];
     data: T;

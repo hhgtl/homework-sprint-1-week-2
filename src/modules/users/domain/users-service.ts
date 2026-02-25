@@ -3,6 +3,9 @@ import {ObjectId} from "mongodb";
 import {bcryptService} from "../../auth/adapters/hash-adapter";
 import {Result} from "../../../common/types/result";
 import {HttpStatuses} from "../../../common/types/http-statuses";
+import {randomUUID} from "crypto";
+import {addHours} from "date-fns";
+
 
 type CreateUserDto = {
     email: string;
@@ -39,6 +42,11 @@ export const usersService = {
             password: hashedPassword,
             login,
             createdAt: new Date(),
+            emailConfirmation: {
+                confirmationCode: randomUUID(),
+                confirmationCodeExpirationDate: addHours(new Date(), 12),
+                isConfirmed: false,
+            }
         }
 
         const userId = await usersRepositories.createUser(newUser);

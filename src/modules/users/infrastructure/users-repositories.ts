@@ -17,6 +17,27 @@ export const usersRepositories = {
     async findUserByLogin(login: string) {
         return await usersCollection.findOne({login});
     },
+    async findUserByConfirmationCode(code: string) {
+        return await usersCollection.findOne({"emailConfirmation.confirmationCode": code});
+    },
+    async confirmUserById(_id: ObjectId) {
+        const {matchedCount} = await usersCollection.updateOne({_id}, {$set: {"emailConfirmation.isConfirmed": true}});
+
+        return matchedCount === 1;
+    },
+    async updateConfirmationCode({_id, newCode, newExpirationDate}:{_id: ObjectId, newCode: string, newExpirationDate: Date}) {
+        const {matchedCount} = await usersCollection.updateOne(
+            { _id },
+            {
+                $set: {
+                    "emailConfirmation.confirmationCode": newCode,
+                    "emailConfirmation.confirmationCodeExpirationDate": newExpirationDate
+                }
+            }
+        );
+
+        return matchedCount === 1;
+    },
     async findByLoginOrEmail(loginOrEmail: string) {
         const regex = new RegExp(`^${loginOrEmail}$`, 'i');
         return await usersCollection.findOne({
