@@ -119,7 +119,7 @@ export const authService = {
 
         const findCreatedUser = await usersRepositoriesQuery.findUserById(userId);
 
-        nodemailerAdapter.sendEmail({email, confirmationCode}).catch(console.error);
+        await nodemailerAdapter.sendEmail({email, confirmationCode}).catch(console.error);
 
         return {
             status: ResultStatus.Success,
@@ -195,7 +195,7 @@ export const authService = {
             }
         }
 
-        nodemailerAdapter.sendEmail({email, confirmationCode}).catch(console.error);
+        await nodemailerAdapter.sendEmail({email, confirmationCode}).catch(console.error);
 
         return {
             status: ResultStatus.Success,
