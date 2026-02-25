@@ -4,6 +4,7 @@ import {usersService} from "../../users/domain/users-service";
 import {ObjectId} from "mongodb";
 import {authService} from "./auth-service";
 import {HttpStatuses} from "../../../common/types/http-statuses";
+import {ResultStatus} from "../../../common/types/result-status";
 
 // jest.setTimeout(100_000_000);
 
@@ -16,6 +17,7 @@ describe('integration tests for auth-service', () => {
         let password: string = 'password123';
 
         beforeAll(async () => {
+            await client.connect();
             await testingRepositories.removeAllData()
 
             const userData = await usersService.createUser({
@@ -66,6 +68,53 @@ describe('integration tests for auth-service', () => {
             expect(errorMessage).toBe('Unauthorized');
             expect(status).toBe(HttpStatuses.Unauthorized);
         })
+    })
+
+    describe('register user', () => {
+        const correctLogin: string = 'hh66gtl';
+        const correctEmail: string = 'petrosahal66@gmail.com';
+        const correctPassword: string = 'qwerty';
+
+        beforeAll(async () => {
+            await client.connect();
+            await testingRepositories.removeAllData()
+        })
+
+        afterAll(async () => {
+            await client.close();
+        });
+
+        it('should return true if user success registered', async () => {
+            const {status} = await authService.registration({
+                password: correctPassword,
+                login: correctLogin,
+                email: correctEmail
+            })
+
+            expect(status).toBe(ResultStatus.Success)
+        })
+
+        it('should return false if user with email is already registered', async () => {
+            const {status} = await authService.registration({
+                password: correctPassword,
+                login: 'newLogin',
+                email: correctEmail
+            })
+
+            expect(status).toBe(ResultStatus.BadRequest)
+        })
+
+        it('should return false if user with login is already registered', async () => {
+            const {status} = await authService.registration({
+                password: correctPassword,
+                login: correctLogin,
+                email: "newEmail"
+            })
+
+            expect(status).toBe(ResultStatus.BadRequest)
+        })
+
+
     })
 
 })
