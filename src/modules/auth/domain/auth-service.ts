@@ -252,6 +252,35 @@ export const authService = {
             extensions: [],
         };
     },
+    async logout(refreshToken: string): Promise<Result> {
+        const payload = jwtAdapter.verifyToken(refreshToken)
+
+        if (!payload) {
+            return {
+                status: ResultStatus.Unauthorized,
+                data: null,
+                extensions: [],
+            };
+        }
+
+        const findJwtInBlackList = await jwtRefreshBlackListRepositories.findJwtInBlackList(refreshToken)
+
+        if (findJwtInBlackList) {
+            return {
+                status: ResultStatus.Unauthorized,
+                data: null,
+                extensions: [],
+            };
+        }
+
+        await jwtRefreshBlackListRepositories.addJwtToBlackList(refreshToken)
+
+        return {
+            status: ResultStatus.Success,
+            data: null,
+            extensions: [],
+        };
+    },
     async _checkUserCredentials({loginOrEmail, password}: {loginOrEmail: string, password: string}) {
         const user = await usersRepositories.findByLoginOrEmail(loginOrEmail);
 
