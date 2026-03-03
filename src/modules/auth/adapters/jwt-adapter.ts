@@ -1,10 +1,11 @@
-import jwt from "jsonwebtoken";
+import jwt, {SignOptions} from "jsonwebtoken";
+
 
 const SECRET = 'MY_SECRET_PASSWORD'
 
 export const jwtAdapter = {
-    createToken({userId}: {userId: string}) {
-        return jwt.sign({userId}, SECRET, { expiresIn: '30d' });
+    createToken({userId, expiresIn = '30d'}: {userId: string, expiresIn?: SignOptions['expiresIn']}) {
+        return jwt.sign({userId}, SECRET, { expiresIn });
 
     },
 

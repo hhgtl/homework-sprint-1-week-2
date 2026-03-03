@@ -16,7 +16,7 @@ export const registrationEmailResendingHandler = async (req: Request, res: Respo
     }
 
     if (payload.status === ResultStatus.Success) {
-        res.status(HttpStatuses.NoContent).send()
+        return res.status(HttpStatuses.NoContent).send()
     }
 
     return res.status(HttpStatuses.ServerError).send()

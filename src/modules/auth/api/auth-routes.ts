@@ -10,6 +10,8 @@ import {inputValidationMiddleware} from "../../../common/middleware/inputValidat
 import {registrationEmailResendingHandler} from "./handlers/registration-email-resending-handler";
 import {codeValidation} from "../validation/code-validation";
 import {registrationConfirmationHandler} from "./handlers/registration-confirmation-handler";
+import {refreshTokenHandler} from "./handlers/refresh-token-handler";
+import {logoutHandler} from "./handlers/logout-handler";
 
 export const authRouter = Router({})
 
@@ -25,3 +27,7 @@ authRouter.post('/registration', loginValidation, passwordValidation, emailValid
 authRouter.post('/registration-email-resending', emailValidation, inputValidationMiddleware, registrationEmailResendingHandler)
 
 authRouter.post('/registration-confirmation', codeValidation, inputValidationMiddleware, registrationConfirmationHandler)
+
+authRouter.post('/refresh-token', refreshTokenHandler)
+
+authRouter.post('/logout', logoutHandler)

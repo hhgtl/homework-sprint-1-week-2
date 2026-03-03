@@ -17,6 +17,9 @@ export const usersRepositories = {
     async findUserByLogin(login: string) {
         return await usersCollection.findOne({login});
     },
+    async findUserById(_id: ObjectId) {
+        return await usersCollection.findOne({_id})
+    },
     async findUserByConfirmationCode(code: string) {
         return await usersCollection.findOne({"emailConfirmation.confirmationCode": code});
     },
@@ -46,5 +49,5 @@ export const usersRepositories = {
                 { login: loginOrEmail }
             ]
         });
-    }
+    },
 }
