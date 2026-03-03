@@ -11,6 +11,9 @@ import {randomUUID} from "crypto";
 import {addHours} from "date-fns";
 import {nodemailerAdapter} from "../adapters/nodemailer-adapter";
 import {UsersViewType} from "../../users/types/users-view-type";
+import {
+    jwtRefreshBlackListRepositories
+} from "../../jwt-refresh-black-list/types/infrastructure/jwt-refresh-black-list-repositories";
 
 const accessTokenExpiration = '10s'
 const refreshTokenExpiration = '20s'
@@ -227,6 +230,18 @@ export const authService = {
                 extensions: [],
             };
         }
+
+        const findJwtInBlackList = await jwtRefreshBlackListRepositories.findJwtInBlackList(refreshToken)
+
+        if (findJwtInBlackList) {
+            return {
+                status: ResultStatus.Unauthorized,
+                data: null,
+                extensions: [],
+            };
+        }
+
+        await jwtRefreshBlackListRepositories.addJwtToBlackList(refreshToken)
 
         const newAccessToken = jwtAdapter.createToken({userId: user._id.toString(), expiresIn: accessTokenExpiration})
         const newRefreshToken = jwtAdapter.createToken({userId: user._id.toString(), expiresIn: refreshTokenExpiration})
