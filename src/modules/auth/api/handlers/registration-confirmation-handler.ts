@@ -16,10 +16,8 @@ export const registrationConfirmationHandler = async (req: Request, res: Respons
     }
 
     if (payload.status === ResultStatus.Success) {
-        res.status(HttpStatuses.NoContent).send()
+        return res.status(HttpStatuses.NoContent).send()
     }
 
     res.status(HttpStatuses.ServerError).send()
-
-
 }

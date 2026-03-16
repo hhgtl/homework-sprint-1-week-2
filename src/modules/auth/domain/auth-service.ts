@@ -11,10 +11,15 @@ import {randomUUID} from "crypto";
 import {addHours} from "date-fns";
 import {nodemailerAdapter} from "../adapters/nodemailer-adapter";
 import {UsersViewType} from "../../users/types/users-view-type";
+import {
+    jwtRefreshBlackListRepositories
+} from "../../jwt-refresh-black-list/types/infrastructure/jwt-refresh-black-list-repositories";
 
+const accessTokenExpiration = '10s'
+const refreshTokenExpiration = '20s'
 
 export const authService = {
-    async loginUser({loginOrEmail, password}: {loginOrEmail: string, password: string}): Promise<Result<{accessToken: string} | null>> {
+    async loginUser({loginOrEmail, password}: {loginOrEmail: string, password: string}): Promise<Result<{accessToken: string, refreshToken: string} | null>> {
 
         const result =  await this._checkUserCredentials({loginOrEmail, password});
 
@@ -27,11 +32,12 @@ export const authService = {
             };
         }
 
-        const accessToken = jwtAdapter.createToken({userId: result.data?._id.toString()!})
+        const accessToken = jwtAdapter.createToken({userId: result.data?._id.toString()!, expiresIn: accessTokenExpiration})
+        const refreshToken = jwtAdapter.createToken({userId: result.data?._id.toString()!, expiresIn: refreshTokenExpiration})
 
         return {
             status: HttpStatuses.Success,
-            data: { accessToken },
+            data: { accessToken, refreshToken },
             extensions: [],
         };
     },
@@ -196,6 +202,78 @@ export const authService = {
         }
 
         await nodemailerAdapter.sendEmail({email, confirmationCode}).catch(console.error);
+
+        return {
+            status: ResultStatus.Success,
+            data: null,
+            extensions: [],
+        };
+    },
+    async refreshToken(refreshToken: string): Promise<Result<{newAccessToken: string, newRefreshToken: string} | null>> {
+        const payload = jwtAdapter.verifyToken(refreshToken)
+
+        if (!payload) {
+            return {
+                status: ResultStatus.Unauthorized,
+                data: null,
+                extensions: [],
+            };
+        }
+
+
+        const user = await usersRepositories.findUserById(new ObjectId(payload.userId))
+
+        if (!user) {
+            return {
+                status: ResultStatus.Unauthorized,
+                data: null,
+                extensions: [],
+            };
+        }
+
+        const findJwtInBlackList = await jwtRefreshBlackListRepositories.findJwtInBlackList(refreshToken)
+
+        if (findJwtInBlackList) {
+            return {
+                status: ResultStatus.Unauthorized,
+                data: null,
+                extensions: [],
+            };
+        }
+
+        await jwtRefreshBlackListRepositories.addJwtToBlackList(refreshToken)
+
+        const newAccessToken = jwtAdapter.createToken({userId: user._id.toString(), expiresIn: accessTokenExpiration})
+        const newRefreshToken = jwtAdapter.createToken({userId: user._id.toString(), expiresIn: refreshTokenExpiration})
+
+        return {
+            status: ResultStatus.Success,
+            data: {newAccessToken, newRefreshToken},
+            extensions: [],
+        };
+    },
+    async logout(refreshToken: string): Promise<Result> {
+        const payload = jwtAdapter.verifyToken(refreshToken)
+
+        if (!payload) {
+            return {
+                status: ResultStatus.Unauthorized,
+                data: null,
+                extensions: [],
+            };
+        }
+
+        const findJwtInBlackList = await jwtRefreshBlackListRepositories.findJwtInBlackList(refreshToken)
+
+        if (findJwtInBlackList) {
+            return {
+                status: ResultStatus.Unauthorized,
+                data: null,
+                extensions: [],
+            };
+        }
+
+        await jwtRefreshBlackListRepositories.addJwtToBlackList(refreshToken)
 
         return {
             status: ResultStatus.Success,

@@ -6,9 +6,11 @@ import {authMiddleware} from "./common/middleware/auth-middleware";
 import {usersRouter} from "./modules/users/api/users-routes";
 import {authRouter} from "./modules/auth/api/auth-routes";
 import {commentsRoutes} from "./modules/comments/api/comments-routes";
+import cookieParser from "cookie-parser";
 
 export const setupApp = (app: Express) => {
     app.use(express.json());
+    app.use(cookieParser())
 
     app.use('/testing', testingRouter);
     app.use('/blogs', blogsRouter);

@@ -19,5 +19,4 @@ export const meHandler = async (req: Request, res: Response) => {
     }
 
     res.status(HttpStatuses.Success).send(meResult.data)
-
 }
