@@ -18,6 +18,7 @@ export const db = client.db("blogger-platform")
 export const blogsCollection = db.collection<BlogDbType>("blogs");
 export const postsCollection = db.collection<PostDbType>("posts");
 export const usersCollection = db.collection<UsersDbType>("users");
+export const authCollection = db.collection<UsersDbType>("auth");
 export const commentsCollection = db.collection<CommentsDbType>("comments");
 
 export async function runDb() {
