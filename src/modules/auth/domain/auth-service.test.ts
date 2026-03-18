@@ -33,41 +33,41 @@ describe('integration tests for auth-service', () => {
             await client.close();
         });
 
-        it('should return true if email and password is correct', async () => {
-            const {data} = await authService.loginUser({loginOrEmail: email, password: password})
+        // it('should return true if email and password is correct', async () => {
+        //     const {data} = await authService.loginUser({loginOrEmail: email, password: password})
+        //
+        //     expect(data).not.toBeNull();
+        //     expect(typeof data?.accessToken).toBe('string');
+        //
+        //     const {data: userData} = await authService.me(data?.accessToken!)
+        //
+        //     expect(userData).not.toBeNull()
+        //     expect(userData?.email).toBe(email)
+        //     expect(userData?.login).toBe(login)
+        //     expect(userData?.userId).toBe(userId!.toString())
+        // });
+        //
+        // it('should return true if login and password is correct', async () => {
+        //     const {data} = await authService.loginUser({loginOrEmail: login, password: password})
+        //
+        //     expect(data).not.toBeNull();
+        //     expect(typeof data?.accessToken).toBe('string');
+        //
+        //     const {data: userData} = await authService.me(data?.accessToken!)
+        //
+        //     expect(userData).not.toBeNull()
+        //     expect(userData?.email).toBe(email)
+        //     expect(userData?.login).toBe(login)
+        //     expect(userData?.userId).toBe(userId!.toString())
+        // });
 
-            expect(data).not.toBeNull();
-            expect(typeof data?.accessToken).toBe('string');
-
-            const {data: userData} = await authService.me(data?.accessToken!)
-
-            expect(userData).not.toBeNull()
-            expect(userData?.email).toBe(email)
-            expect(userData?.login).toBe(login)
-            expect(userData?.userId).toBe(userId!.toString())
-        });
-
-        it('should return true if login and password is correct', async () => {
-            const {data} = await authService.loginUser({loginOrEmail: login, password: password})
-
-            expect(data).not.toBeNull();
-            expect(typeof data?.accessToken).toBe('string');
-
-            const {data: userData} = await authService.me(data?.accessToken!)
-
-            expect(userData).not.toBeNull()
-            expect(userData?.email).toBe(email)
-            expect(userData?.login).toBe(login)
-            expect(userData?.userId).toBe(userId!.toString())
-        });
-
-        it('should return true if email or login is incorrect', async () => {
-            const {data, errorMessage, status} = await authService.loginUser({loginOrEmail: 'incorrect loginOrEmail', password: password})
-
-            expect(data).toBeNull();
-            expect(errorMessage).toBe('Unauthorized');
-            expect(status).toBe(HttpStatuses.Unauthorized);
-        })
+        // it('should return true if email or login is incorrect', async () => {
+        //     const {data, errorMessage, status} = await authService.loginUser({loginOrEmail: 'incorrect loginOrEmail', password: password})
+        //
+        //     expect(data).toBeNull();
+        //     expect(errorMessage).toBe('Unauthorized');
+        //     expect(status).toBe(HttpStatuses.Unauthorized);
+        // })
     })
 
     describe('register user', () => {

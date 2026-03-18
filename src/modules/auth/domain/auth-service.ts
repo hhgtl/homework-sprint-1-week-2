@@ -11,12 +11,18 @@ import {randomUUID} from "crypto";
 import {addHours} from "date-fns";
 import {nodemailerAdapter} from "../adapters/nodemailer-adapter";
 import {UsersViewType} from "../../users/types/users-view-type";
+import {AuthViewType} from "../types/auth-view-type";
+import jwt, {JwtPayload} from "jsonwebtoken";
+import {authRepositories} from "../infrastructure/auth-repositories";
+import {AuthDbType} from "../types/auth-db-type";
 
-const accessTokenExpiration = '10s'
-const refreshTokenExpiration = '20s'
+const accessTokenExpirationForTest = '10s'
+const accessTokenExpiration = '10d'
+const refreshTokenExpiration = '20d'
+const refreshTokenExpirationForTest = '20s'
 
 export const authService = {
-    async loginUser({loginOrEmail, password}: {loginOrEmail: string, password: string}): Promise<Result<{accessToken: string, refreshToken: string} | null>> {
+    async loginUser({loginOrEmail, password, userAgent, ip}: {loginOrEmail: string, password: string, userAgent: string, ip: string}): Promise<Result<{accessToken: string, refreshToken: string} | null>> {
 
         const result =  await this._checkUserCredentials({loginOrEmail, password});
 
@@ -29,8 +35,25 @@ export const authService = {
             };
         }
 
-        const accessToken = jwtAdapter.createToken({userId: result.data?._id.toString()!, expiresIn: accessTokenExpiration})
-        const refreshToken = jwtAdapter.createToken({userId: result.data?._id.toString()!, expiresIn: refreshTokenExpiration})
+        const userId = result.data?._id.toString()!
+        const deviceId = randomUUID()
+
+        const accessToken = jwtAdapter.createToken({userId, expiresIn: accessTokenExpiration})
+        const refreshToken = jwtAdapter.createToken({userId, deviceId, expiresIn: refreshTokenExpiration})
+
+        const decodedRefreshToken = jwt.decode(refreshToken) as JwtPayload;
+
+        const newSession: AuthDbType = {
+            userId: new ObjectId(userId),
+            deviceId,
+            title: userAgent,
+            exp: decodedRefreshToken.exp as number,
+            iat: decodedRefreshToken.iat as number,
+            lastActiveDate: '',
+            ip
+        }
+
+        const sessionId = await authRepositories.createNewSession(newSession)
 
         return {
             status: HttpStatuses.Success,
@@ -208,7 +231,7 @@ export const authService = {
     },
     async refreshToken(refreshToken: string): Promise<Result<{newAccessToken: string, newRefreshToken: string} | null>> {
         const payload = jwtAdapter.verifyToken(refreshToken)
-
+        debugger
         if (!payload) {
             return {
                 status: ResultStatus.Unauthorized,
@@ -228,20 +251,41 @@ export const authService = {
             };
         }
 
-        // const findJwtInBlackList = await jwtRefreshBlackListRepositories.findJwtInBlackList(refreshToken)
-        //
-        // if (findJwtInBlackList) {
-        //     return {
-        //         status: ResultStatus.Unauthorized,
-        //         data: null,
-        //         extensions: [],
-        //     };
-        // }
-        //
-        // await jwtRefreshBlackListRepositories.addJwtToBlackList(refreshToken)
+        if (!payload.deviceId) {
+            return {
+                status: ResultStatus.Unauthorized,
+                data: null,
+                extensions: [],
+            };
+        }
+
+        const session = await authRepositories.findSessionByDeviceId(payload.deviceId)
+
+        const decodedUserRefreshToken = jwt.decode(refreshToken) as JwtPayload;
+
+        if (!session || session.iat !== decodedUserRefreshToken.iat) {
+            return {
+                status: ResultStatus.Unauthorized,
+                data: null,
+                extensions: [],
+            };
+        }
 
         const newAccessToken = jwtAdapter.createToken({userId: user._id.toString(), expiresIn: accessTokenExpiration})
-        const newRefreshToken = jwtAdapter.createToken({userId: user._id.toString(), expiresIn: refreshTokenExpiration})
+        const newRefreshToken = jwtAdapter.createToken({userId: user._id.toString(), deviceId: session.deviceId, expiresIn: refreshTokenExpiration})
+
+        const decodedNewRefreshToken = jwt.decode(newRefreshToken) as JwtPayload;
+
+        const { _id, ...sessionWithoutId } = session;
+
+        const updatedSession = {
+            ...sessionWithoutId,
+            iat: decodedNewRefreshToken.iat!,
+            exp: decodedNewRefreshToken.exp!,
+            lastActiveDate: new Date().toISOString()
+        }
+
+        await authRepositories.updateSessionById(session._id, updatedSession)
 
         return {
             status: ResultStatus.Success,
@@ -278,6 +322,7 @@ export const authService = {
             extensions: [],
         };
     },
+
     async _checkUserCredentials({loginOrEmail, password}: {loginOrEmail: string, password: string}) {
         const user = await usersRepositories.findByLoginOrEmail(loginOrEmail);
 
