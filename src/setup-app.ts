@@ -7,6 +7,7 @@ import {usersRouter} from "./modules/users/api/users-routes";
 import {authRouter} from "./modules/auth/api/auth-routes";
 import {commentsRoutes} from "./modules/comments/api/comments-routes";
 import cookieParser from "cookie-parser";
+import {securityDeviceRouter} from "./modules/security-divices/api/security-divices-routers";
 
 export const setupApp = (app: Express) => {
     app.use(express.json());
@@ -18,6 +19,7 @@ export const setupApp = (app: Express) => {
     app.use('/users', usersRouter);
     app.use('/auth', authRouter);
     app.use('/comments', commentsRoutes);
+    app.use('/security/device', securityDeviceRouter);
 
     app.get("/", (req, res) => {
         res.send("Hello World!");

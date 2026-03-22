@@ -14,4 +14,15 @@ export const authRepositories = {
         const res = await authCollection.updateOne({_id}, {$set: payload})
         return res.matchedCount === 1
     },
+    async deleteSessionByDeviceId(deviceId: string): Promise<boolean> {
+        const res = await authCollection.deleteOne({deviceId})
+        return res.deletedCount === 1
+    },
+    async deleteAllSessionByUserIdExcludeCurrentSession({userId, deviceId}: {userId: ObjectId, deviceId: string}): Promise<boolean> {
+        const res = await authCollection.deleteMany({
+            userId,
+            deviceId: {$ne: deviceId}
+        })
+        return res.deletedCount === 1
+    }
 }

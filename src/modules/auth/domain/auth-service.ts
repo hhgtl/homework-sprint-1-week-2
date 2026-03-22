@@ -38,7 +38,7 @@ export const authService = {
         const userId = result.data?._id.toString()!
         const deviceId = randomUUID()
 
-        const accessToken = jwtAdapter.createToken({userId, expiresIn: accessTokenExpiration})
+        const accessToken = jwtAdapter.createToken({userId, deviceId, expiresIn: accessTokenExpiration})
         const refreshToken = jwtAdapter.createToken({userId, deviceId, expiresIn: refreshTokenExpiration})
 
         const decodedRefreshToken = jwt.decode(refreshToken) as JwtPayload;
@@ -231,7 +231,7 @@ export const authService = {
     },
     async refreshToken(refreshToken: string): Promise<Result<{newAccessToken: string, newRefreshToken: string} | null>> {
         const payload = jwtAdapter.verifyToken(refreshToken)
-        debugger
+
         if (!payload) {
             return {
                 status: ResultStatus.Unauthorized,
@@ -271,7 +271,7 @@ export const authService = {
             };
         }
 
-        const newAccessToken = jwtAdapter.createToken({userId: user._id.toString(), expiresIn: accessTokenExpiration})
+        const newAccessToken = jwtAdapter.createToken({userId: user._id.toString(), deviceId: session.deviceId, expiresIn: accessTokenExpiration})
         const newRefreshToken = jwtAdapter.createToken({userId: user._id.toString(), deviceId: session.deviceId, expiresIn: refreshTokenExpiration})
 
         const decodedNewRefreshToken = jwt.decode(newRefreshToken) as JwtPayload;
