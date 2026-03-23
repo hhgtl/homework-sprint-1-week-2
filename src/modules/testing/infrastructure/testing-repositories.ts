@@ -1,4 +1,5 @@
 import {
+    authCollection,
     blogsCollection,
     commentsCollection,
     postsCollection,
@@ -14,5 +15,6 @@ export const testingRepositories = {
         await usersCollection.deleteMany()
         await commentsCollection.deleteMany()
         await rateLimitCollection.deleteMany()
+        await authCollection.deleteMany()
     }
 }

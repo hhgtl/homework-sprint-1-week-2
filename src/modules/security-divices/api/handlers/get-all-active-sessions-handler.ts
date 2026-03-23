@@ -16,5 +16,11 @@ export const getAllActiveSessionsHandler = async (req: Request, res: Response) =
 
     if (allActiveSessions.status === ResultStatus.Success) {
         return res.status(HttpStatuses.Success).send(allActiveSessions.data)
+    } else if (allActiveSessions.status === ResultStatus.Unauthorized) {
+        return res.status(HttpStatuses.Unauthorized).send()
+    } else if (allActiveSessions.status === ResultStatus.NotFound) {
+        return res.status(HttpStatuses.NotFound).send()
     }
+
+    return res.status(HttpStatuses.ServerError).send()
 }
