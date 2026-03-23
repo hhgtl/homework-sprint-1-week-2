@@ -23,11 +23,11 @@ authRouter.post('/login', rateLimitMiddleware, authPasswordValidation, authLogin
 
 authRouter.get('/me', meHandler)
 
-authRouter.post('/registration', loginValidation, passwordValidation, emailValidation, inputValidationMiddleware, registrationHandler)
+authRouter.post('/registration', rateLimitMiddleware, loginValidation, passwordValidation, emailValidation, inputValidationMiddleware, registrationHandler)
 
-authRouter.post('/registration-email-resending', emailValidation, inputValidationMiddleware, registrationEmailResendingHandler)
+authRouter.post('/registration-email-resending', rateLimitMiddleware, emailValidation, inputValidationMiddleware, registrationEmailResendingHandler)
 
-authRouter.post('/registration-confirmation', codeValidation, inputValidationMiddleware, registrationConfirmationHandler)
+authRouter.post('/registration-confirmation', rateLimitMiddleware, codeValidation, inputValidationMiddleware, registrationConfirmationHandler)
 
 authRouter.post('/refresh-token', refreshTokenHandler)
 

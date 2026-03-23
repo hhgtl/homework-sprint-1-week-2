@@ -240,7 +240,6 @@ export const authService = {
             };
         }
 
-
         const user = await usersRepositories.findUserById(new ObjectId(payload.userId))
 
         if (!user) {
