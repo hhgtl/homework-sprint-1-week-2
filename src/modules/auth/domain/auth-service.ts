@@ -17,8 +17,8 @@ import {authRepositories} from "../infrastructure/auth-repositories";
 import {AuthDbType} from "../types/auth-db-type";
 
 const accessTokenExpirationForTest = '10s'
-const accessTokenExpiration = '10d'
-const refreshTokenExpiration = '20d'
+const accessTokenExpiration = '10s'
+const refreshTokenExpiration = '20s'
 const refreshTokenExpirationForTest = '20s'
 
 export const authService = {

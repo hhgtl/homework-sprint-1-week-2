@@ -12,13 +12,14 @@ import {codeValidation} from "../validation/code-validation";
 import {registrationConfirmationHandler} from "./handlers/registration-confirmation-handler";
 import {refreshTokenHandler} from "./handlers/refresh-token-handler";
 import {logoutHandler} from "./handlers/logout-handler";
+import {rateLimitMiddleware} from "../../rate-limit/middleware/rate-limit-middleware";
 
 export const authRouter = Router({})
 
 const authPasswordValidation = body('password').isString()
 const authLoginOrEmailValidation = body('loginOrEmail').isString()
 
-authRouter.post('/login', authPasswordValidation, authLoginOrEmailValidation, loginHandler)
+authRouter.post('/login', rateLimitMiddleware, authPasswordValidation, authLoginOrEmailValidation, loginHandler)
 
 authRouter.get('/me', meHandler)
 
