@@ -19,7 +19,7 @@ export const setupApp = (app: Express) => {
     app.use('/users', usersRouter);
     app.use('/auth', authRouter);
     app.use('/comments', commentsRoutes);
-    app.use('/security/device', securityDeviceRouter);
+    app.use('/security/devices', securityDeviceRouter);
 
     app.get("/", (req, res) => {
         res.send("Hello World!");
