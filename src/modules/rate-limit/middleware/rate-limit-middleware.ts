@@ -6,13 +6,13 @@ export const rateLimitMiddleware = async (req: Request, res: Response, next: Nex
     const ip = req.ip || 'unknown';
     const url = req.originalUrl
 
-    await rateLimitService.addToRateLimit({url, ip})
-
     const isThrottled = await rateLimitService.checkRateLimit({url, ip})
 
     if (!isThrottled) {
         return res.status(HttpStatuses.TooManyRequests).send()
     }
+
+    await rateLimitService.addToRateLimit({url, ip})
 
     next()
 }
