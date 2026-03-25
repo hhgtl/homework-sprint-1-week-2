@@ -49,7 +49,7 @@ export const authService = {
             title: userAgent,
             exp: decodedRefreshToken.exp as number,
             iat: decodedRefreshToken.iat as number,
-            lastActiveDate: '',
+            lastActiveDate: new Date().toISOString(),
             ip
         }
 

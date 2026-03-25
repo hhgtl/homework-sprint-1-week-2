@@ -8,7 +8,7 @@ export const rateLimitMiddleware = async (req: Request, res: Response, next: Nex
 
     const isThrottled = await rateLimitService.checkRateLimit({url, ip})
 
-    if (!isThrottled) {
+    if (isThrottled) {
         return res.status(HttpStatuses.TooManyRequests).send()
     }
 
