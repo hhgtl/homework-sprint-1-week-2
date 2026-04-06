@@ -18,7 +18,7 @@ export const usersService = {
         const errorMessages = []
         const isEmailUnique = await usersRepositories.findUserByEmail(email)
         const isLoginUnique = await usersRepositories.findUserByLogin(login)
-debugger
+
         if (isEmailUnique) {
             errorMessages.push({field: 'email', message: 'email should be unique'})
         }

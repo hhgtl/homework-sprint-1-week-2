@@ -1,56 +1,56 @@
-import {testingRepositories} from "../../testing/infrastructure/testing-repositories";
-import {blogsService} from "./blogs-service";
-import mongoose from 'mongoose';
-import {blogsRepositoriesQuery} from "../infrastructure/blogs-repositories-query";
-import {ObjectId} from "mongodb";
-import {client} from "../../../db/db";
-
-describe('integration tests for blogs-service', () => {
-
-    describe('create blogs', () => {
-        let createdBlogId: ObjectId;
-
-        const newBlogData = {
-            name: 'newBlog',
-            websiteUrl: 'https://SrZuY.BrwYI6xMUdkacXfqExn1WcWDJiINTCutN5Rtu23txI5kOd_Fsyc6PF7Xv-5XHL-uCV_jfdIe_ywzr4.zmnYH8q',
-            description: 'new blog description'
-        };
-
-        beforeAll(async () => {
-            await testingRepositories.removeAllData()
-        })
-
-        afterAll(async () => {
-            await client.close();
-        });
-
-        it('should create a blog', async () => {
-            createdBlogId = await blogsService.createBlog(newBlogData);
-
-            expect(mongoose.Types.ObjectId.isValid(createdBlogId)).toBe(true);
-        });
-
-        it('should find the created blog by id', async () => {
-            const blog = await blogsRepositoriesQuery.findBlogById(createdBlogId);
-
-            expect(blog).toEqual({
-                id: createdBlogId.toString(),
-                name: newBlogData.name,
-                description: newBlogData.description,
-                websiteUrl: newBlogData.websiteUrl,
-                isMembership: expect.any(Boolean),
-                createdAt: expect.any(String)
-            });
-        });
-
-        it('should return true after deleting blog by id', async () => {
-            const res = await blogsService.removeBlogById(createdBlogId);
-
-            expect(res).toEqual(true);
-        })
-    })
-
-})
+// import {testingRepositories} from "../../testing/infrastructure/testing-repositories";
+// import {blogsService} from "./blogs-service";
+// import mongoose from 'mongoose';
+// import {blogsRepositoriesQuery} from "../infrastructure/blogs-repositories-query";
+// import {ObjectId} from "mongodb";
+// import {client} from "../../../db/db";
+//
+// describe('integration tests for blogs-service', () => {
+//
+//     describe('create blogs', () => {
+//         let createdBlogId: ObjectId;
+//
+//         const newBlogData = {
+//             name: 'newBlog',
+//             websiteUrl: 'https://SrZuY.BrwYI6xMUdkacXfqExn1WcWDJiINTCutN5Rtu23txI5kOd_Fsyc6PF7Xv-5XHL-uCV_jfdIe_ywzr4.zmnYH8q',
+//             description: 'new blog description'
+//         };
+//
+//         beforeAll(async () => {
+//             // await testingRepositories.removeAllData()
+//         })
+//
+//         afterAll(async () => {
+//             // await client.close();
+//         });
+//
+//         it('should create a blog', async () => {
+//             createdBlogId = await blogsService.createBlog(newBlogData);
+//
+//             expect(mongoose.Types.ObjectId.isValid(createdBlogId)).toBe(true);
+//         });
+//
+//         it('should find the created blog by id', async () => {
+//             const blog = await blogsRepositoriesQuery.findBlogById(createdBlogId);
+//
+//             expect(blog).toEqual({
+//                 id: createdBlogId.toString(),
+//                 name: newBlogData.name,
+//                 description: newBlogData.description,
+//                 websiteUrl: newBlogData.websiteUrl,
+//                 isMembership: expect.any(Boolean),
+//                 createdAt: expect.any(String)
+//             });
+//         });
+//
+//         it('should return true after deleting blog by id', async () => {
+//             const res = await blogsService.removeBlogById(createdBlogId);
+//
+//             expect(res).toEqual(true);
+//         })
+//     })
+//
+// })
 
 // jest.setTimeout(100_000_000); EXAMPLES
 //

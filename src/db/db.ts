@@ -11,7 +11,7 @@ import {RateLimitDbType} from "../modules/rate-limit/types/rate-limit-db-type";
 
 // mongo atlas
 
-const mongoUri = "mongodb+srv://petrosahal66:fMNc55JdIgAzx81t@cluster0.o6rzywd.mongodb.net/?appName=Cluster0&family=4"
+const mongoUri = "mongodb+srv://petrosahal66:MNc55JdIgAzx81t@cluster0.o6rzywd.mongodb.net/?appName=Cluster0"
 
 
 export const client = new MongoClient(mongoUri);
