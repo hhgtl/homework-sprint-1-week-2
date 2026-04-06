@@ -10,7 +10,7 @@ export const rateLimitService = {
             return new Date(date).getTime() > timeLimit;
         });
 
-        return recentRequests.length > 5;
+        return recentRequests.length > 4;
     },
     async addToRateLimit({ip, url}: {url: string, ip: string}) {
         const data: RateLimitDbType = {
