@@ -19,6 +19,6 @@ export const loginHandler = async (req: Request, res: Response) => {
         return res.status(user.status).send(user)
     }
 
-    res.cookie(REFRESH_TOKEN, user.data?.refreshToken, {httpOnly: true, secure: true, maxAge: COOKIE_MAX_AGE_20_SECONDS})
+    res.cookie(REFRESH_TOKEN, user.data?.refreshToken, {httpOnly: true, secure: true, maxAge: COOKIE_MAX_AGE_20_SECONDS, sameSite: 'none', path: '/'})
     res.status(HttpStatuses.Success).send({accessToken: user.data?.accessToken})
 }

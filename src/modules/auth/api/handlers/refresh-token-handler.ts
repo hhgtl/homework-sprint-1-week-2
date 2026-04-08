@@ -15,7 +15,7 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
 
 
     if (status === ResultStatus.Success && data) {
-        res.cookie(REFRESH_TOKEN, data.newRefreshToken, {httpOnly: true, secure: true, maxAge: COOKIE_MAX_AGE_20_SECONDS})
+        res.cookie(REFRESH_TOKEN, data.newRefreshToken, {httpOnly: true, secure: true, maxAge: COOKIE_MAX_AGE_20_SECONDS, sameSite: 'none', path: '/'})
         return res.status(HttpStatuses.Success).send({accessToken: data.newAccessToken})
     }
 
