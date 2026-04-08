@@ -59,7 +59,7 @@ export const securityDivicesService = {
 
         if (session.userId.toString() !== userId) {
             return {
-                status: ResultStatus.Unauthorized,
+                status: ResultStatus.Forbidden,
                 data: null,
                 extensions: [],
             };
