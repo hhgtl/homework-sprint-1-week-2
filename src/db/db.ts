@@ -14,6 +14,7 @@ import {RateLimitDbType} from "../modules/rate-limit/types/rate-limit-db-type";
 const mongoUri = "mongodb+srv://petrosahal66:fMNc55JdIgAzx81t@cluster0.o6rzywd.mongodb.net/?appName=Cluster0&family=4"
 
 
+
 export const client = new MongoClient(mongoUri);
 
 export const db = client.db("blogger-platform")
