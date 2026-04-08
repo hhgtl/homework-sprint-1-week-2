@@ -6,6 +6,7 @@ import {ResultStatus} from "../../../../common/types/result-status";
 export const getAllActiveSessionsHandler = async (req: Request, res: Response) => {
     const bearerJWT = req.headers.authorization;
     console.log("bearerJWT:", bearerJWT);
+    console.log("ALL HEADERS:", JSON.stringify(req.headers))
     if (!bearerJWT) {
         return res.status(HttpStatuses.Unauthorized).send()
     }
