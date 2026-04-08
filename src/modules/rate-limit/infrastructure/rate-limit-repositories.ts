@@ -6,7 +6,11 @@ export const rateLimitRepositories = {
         const res = await rateLimitCollection.insertOne(data);
         return res.insertedId;
     },
-    async findByIpAndUrl({ip, url}: {url: string, ip: string}) {
-        return await rateLimitCollection.find({ip, url}).toArray();
+    async findByIpAndUrlSince({ip, url, since}: {url: string, ip: string, since: string}) {
+        return await rateLimitCollection.countDocuments({
+            ip,
+            url,
+            date: { $gt: since }
+        });
     }
 }
