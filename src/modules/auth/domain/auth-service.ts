@@ -18,7 +18,7 @@ import {AuthDbType} from "../types/auth-db-type";
 
 const accessTokenExpirationForTest = '10s'
 const accessTokenExpiration = '10'
-const refreshTokenExpiration = '60s'
+const refreshTokenExpiration = '20s'
 const refreshTokenExpirationForTest = '20s'
 
 export const authService = {
@@ -314,6 +314,9 @@ export const authService = {
         // }
         //
         // await jwtRefreshBlackListRepositories.addJwtToBlackList(refreshToken)
+        const { deviceId } = payload;
+
+        await authRepositories.deleteSessionByDeviceId(deviceId)
 
         return {
             status: ResultStatus.Success,

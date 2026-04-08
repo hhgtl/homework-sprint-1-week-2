@@ -5,9 +5,10 @@ import {authMiddleware} from "../../../common/middleware/auth-middleware";
 import {deleteSessionByDeviceIdHandler} from "./handlers/delete-session-by-deviceId-handler";
 import {deleteAllSessionsHandler} from "./handlers/delete-all-sessions-handler";
 import {deviceIdValidation} from "../validation/deviceId-validation";
+import {inputValidationMiddleware} from "../../../common/middleware/inputValidationMiddleware";
 
 export const securityDeviceRouter = Router({})
 
 securityDeviceRouter.get("/", getAllActiveSessionsHandler)
 securityDeviceRouter.delete("/", deleteAllSessionsHandler)
-securityDeviceRouter.delete("/:deviceId", deviceIdValidation, deleteSessionByDeviceIdHandler)
+securityDeviceRouter.delete("/:deviceId", deviceIdValidation, inputValidationMiddleware, deleteSessionByDeviceIdHandler)
