@@ -10,6 +10,8 @@ export const loginHandler = async (req: Request, res: Response) => {
     const ip = req.ip || 'unknown';
     // const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown ip'
 
+    console.log("password", password);
+    console.log("loginOrEmail", loginOrEmail);
 
     const user = await authService.loginUser({loginOrEmail, password,
         userAgent, ip
