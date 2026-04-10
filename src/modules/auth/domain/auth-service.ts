@@ -284,6 +284,19 @@ export const authService = {
             lastActiveDate: new Date().toISOString()
         }
 
+        const findJwtInBlackList = await jwtRefreshBlackListRepositories.findJwtInBlackList(refreshToken)
+
+        if (findJwtInBlackList) {
+            return {
+                status: ResultStatus.Unauthorized,
+                data: null,
+                extensions: [],
+            };
+        }
+
+        await jwtRefreshBlackListRepositories.addJwtToBlackList(refreshToken)
+
+
         await authRepositories.updateSessionById(session._id, updatedSession)
 
         return {
