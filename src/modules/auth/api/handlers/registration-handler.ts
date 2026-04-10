@@ -6,6 +6,10 @@ import {ResultStatus} from "../../../../common/types/result-status";
 export const registrationHandler = async (req: Request, res: Response) => {
     const { login, password, email } = req.body;
 
+    console.log("login", login);
+    console.log("password", password);
+    console.log("email", email);
+
     const payload = await authService.registration({login, email, password});
 
     if (payload.status === ResultStatus.BadRequest) {
