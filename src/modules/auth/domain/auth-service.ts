@@ -15,10 +15,13 @@ import {AuthViewType} from "../types/auth-view-type";
 import jwt, {JwtPayload} from "jsonwebtoken";
 import {authRepositories} from "../infrastructure/auth-repositories";
 import {AuthDbType} from "../types/auth-db-type";
+import {
+    jwtRefreshBlackListRepositories
+} from "../../jwt-refresh-black-list/infrastructure/jwt-refresh-black-list-repositories";
 
 const accessTokenExpirationForTest = '10s'
-const accessTokenExpiration = '10d'
-const refreshTokenExpiration = '20d'
+const accessTokenExpiration = '10s'
+const refreshTokenExpiration = '20s'
 const refreshTokenExpirationForTest = '20s'
 
 export const authService = {
@@ -231,7 +234,7 @@ export const authService = {
     },
     async refreshToken(refreshToken: string): Promise<Result<{newAccessToken: string, newRefreshToken: string} | null>> {
         const payload = jwtAdapter.verifyToken(refreshToken)
-
+        console.log(payload)
         if (!payload) {
             return {
                 status: ResultStatus.Unauthorized,
@@ -316,17 +319,19 @@ export const authService = {
             };
         }
 
-        // const findJwtInBlackList = await jwtRefreshBlackListRepositories.findJwtInBlackList(refreshToken)
-        //
-        // if (findJwtInBlackList) {
-        //     return {
-        //         status: ResultStatus.Unauthorized,
-        //         data: null,
-        //         extensions: [],
-        //     };
-        // }
-        //
-        // await jwtRefreshBlackListRepositories.addJwtToBlackList(refreshToken)
+        const findJwtInBlackList = await jwtRefreshBlackListRepositories.findJwtInBlackList(refreshToken)
+
+        if (findJwtInBlackList) {
+            return {
+                status: ResultStatus.Unauthorized,
+                data: null,
+                extensions: [],
+            };
+        }
+
+        await jwtRefreshBlackListRepositories.addJwtToBlackList(refreshToken)
+
+
         const { deviceId } = payload;
 
         await authRepositories.deleteSessionByDeviceId(deviceId)
