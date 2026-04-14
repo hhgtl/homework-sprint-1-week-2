@@ -1,9 +1,12 @@
 import {Request, Response} from "express";
 import {getPaginationWithSortFields} from "../../../../common/utils/get-pagination-with-sort-fields";
 import {ObjectId} from "mongodb";
-import {postsRepositoriesQuery} from "../../infrastructure/posts-repositories-query";
+import {PostsRepositoriesQuery} from "../../infrastructure/posts-repositories-query";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
-import {commentsRepositoriesQuery} from "../../../comments/infrastructure/comments-repositories-query";
+import {CommentsRepositoriesQuery} from "../../../comments/infrastructure/comments-repositories-query";
+
+const postsRepositoriesQuery = new PostsRepositoriesQuery()
+const commentsRepositoriesQuery = new CommentsRepositoriesQuery()
 
 export const getCommentsByPostIdHandler = async (req: Request, res: Response) => {
     const {sortBy, sortDirection, pageNumber, pageSize} = getPaginationWithSortFields(req.query);

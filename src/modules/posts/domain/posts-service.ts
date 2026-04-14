@@ -1,10 +1,13 @@
-import {postsRepositories} from "../infrastructure/posts-repositories";
-import {blogsRepositories} from "../../blogs/infrastructure/blogs-repositories";
+import {PostsRepositories} from "../infrastructure/posts-repositories";
+import {BlogsRepositories} from "../../blogs/infrastructure/blogs-repositories";
 import {ObjectId} from "mongodb";
 
-export const postsService = {
+export class PostsService {
+    private postsRepositories = new PostsRepositories()
+    private blogsRepositories = new BlogsRepositories()
+
     async createPosts({title, shortDescription, content, blogId}: {title: string, shortDescription: string, content: string, blogId: ObjectId}) {
-        const blog = await blogsRepositories.findBlogById(blogId)
+        const blog = await this.blogsRepositories.findBlogById(blogId)
         const blogName = blog && !Array.isArray(blog) ? blog.name : ''
 
         const newPost = {
@@ -16,8 +19,8 @@ export const postsService = {
             createdAt: new Date().toISOString(),
         }
 
-        return await postsRepositories.createPosts(newPost)
-    },
+        return await this.postsRepositories.createPosts(newPost)
+    }
     async changePostsById(_id: ObjectId, body: {title: string, shortDescription: string, content: string, blogId: ObjectId}) {
         const payload = {
             title: body.title,
@@ -26,9 +29,9 @@ export const postsService = {
             blogId: body.blogId,
         }
 
-        return await postsRepositories.changePostsById(_id, payload)
-    },
+        return await this.postsRepositories.changePostsById(_id, payload)
+    }
     async removePostsById(_id: ObjectId) {
-        return postsRepositories.removePostsById(_id)
+        return this.postsRepositories.removePostsById(_id)
     }
 }

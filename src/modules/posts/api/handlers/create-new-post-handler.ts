@@ -1,8 +1,11 @@
 import {Request, Response} from "express";
 import {ObjectId} from "mongodb";
-import {postsService} from "../../domain/posts-service";
+import {PostsService} from "../../domain/posts-service";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
-import {postsRepositoriesQuery} from "../../infrastructure/posts-repositories-query";
+import {PostsRepositoriesQuery} from "../../infrastructure/posts-repositories-query";
+
+const postsService = new PostsService()
+const postsRepositoriesQuery = new PostsRepositoriesQuery()
 
 export const createNewPostHandler = async (req: Request, res: Response) => {
     const title = req.body.title;

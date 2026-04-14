@@ -1,7 +1,9 @@
 import {Request, Response} from "express";
 import {getPaginationWithSortFields} from "../../../../common/utils/get-pagination-with-sort-fields";
-import {blogsRepositoriesQuery} from "../../infrastructure/blogs-repositories-query";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
+import {BlogsRepositoriesQuery} from "../../infrastructure/blogs-repositories-query";
+
+const blogsRepositoriesQuery = new BlogsRepositoriesQuery()
 
 export const getAllBlogsHandler = async (req: Request, res: Response) => {
     const {sortBy, sortDirection, pageNumber, pageSize} = getPaginationWithSortFields(req.query);

@@ -1,7 +1,9 @@
 import {Request, Response} from "express";
-import {authService} from "../../domain/auth-service";
 import {ResultStatus} from "../../../../common/types/result-status";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
+import {AuthService} from "../../domain/auth-service";
+
+const authService = new AuthService()
 
 
 export const registrationConfirmationHandler = async (req: Request, res: Response) => {

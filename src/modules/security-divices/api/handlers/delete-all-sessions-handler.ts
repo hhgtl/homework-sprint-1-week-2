@@ -1,7 +1,9 @@
 import {Request, Response} from "express";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
-import {securityDivicesService} from "../../domain/security-divices-service";
 import {ResultStatus} from "../../../../common/types/result-status";
+import {SecurityDivicesService} from "../../domain/security-divices-service";
+
+const securityDivicesService = new SecurityDivicesService()
 
 export const deleteAllSessionsHandler = async (req: Request, res: Response) => {
     const bearerJWT = req.headers.authorization;

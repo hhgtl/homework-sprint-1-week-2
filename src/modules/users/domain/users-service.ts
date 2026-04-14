@@ -1,4 +1,4 @@
-import {usersRepositories} from "../infrastructure/users-repositories";
+import {UsersRepositories} from "../infrastructure/users-repositories";
 import {ObjectId} from "mongodb";
 import {bcryptService} from "../../auth/adapters/hash-adapter";
 import {Result} from "../../../common/types/result";
@@ -13,11 +13,13 @@ type CreateUserDto = {
     login: string;
 }
 
-export const usersService = {
-    createUser: async ({login, email, password}: CreateUserDto): Promise<Result<ObjectId | null>> => {
+export class UsersService {
+    private usersRepositories = new UsersRepositories()
+
+    async createUser({login, email, password}: CreateUserDto): Promise<Result<ObjectId | null>>  {
         const errorMessages = []
-        const isEmailUnique = await usersRepositories.findUserByEmail(email)
-        const isLoginUnique = await usersRepositories.findUserByLogin(login)
+        const isEmailUnique = await this.usersRepositories.findUserByEmail(email)
+        const isLoginUnique = await this.usersRepositories.findUserByLogin(login)
 
         if (isEmailUnique) {
             errorMessages.push({field: 'email', message: 'email should be unique'})
@@ -49,16 +51,16 @@ export const usersService = {
             }
         }
 
-        const userId = await usersRepositories.createUser(newUser);
+        const userId = await this.usersRepositories.createUser(newUser);
 
         return {
             status: HttpStatuses.Success,
             extensions: errorMessages,
             data: userId
         }
-    },
-    deleteUserById: async (_id: ObjectId): Promise<Result> => {
-        const isUserDeleted = await usersRepositories.deleteUserById(_id);
+    }
+    async deleteUserById(_id: ObjectId): Promise<Result> {
+        const isUserDeleted = await this.usersRepositories.deleteUserById(_id);
 
         if (isUserDeleted) {
             return {

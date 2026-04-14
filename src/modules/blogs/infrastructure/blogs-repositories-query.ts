@@ -1,6 +1,4 @@
-// import {GetAllBlogsQuery} from "../domain/blogs-service";
 import {blogsCollection, postsCollection} from "../../../db/db";
-import {stripMongoDBId} from "../../../common/utils/stripMongoDBId";
 import {SortQueryFilterType} from "../../../common/types/sort-query-filter-type";
 import {ObjectId, WithId} from "mongodb";
 import {PostDbType} from "../../posts/types/post-db-type";
@@ -8,7 +6,7 @@ import {BlogDbType} from "../types/blog-db-type";
 import {BlogViewType} from "../types/blog-view-type";
 import {PostViewType} from "../../posts/types/post-view-type";
 
-export const blogsRepositoriesQuery = {
+export class BlogsRepositoriesQuery {
     async getAllBlogs({sortBy, sortDirection, searchNameTerm, pageNumber, pageSize}: SortQueryFilterType & {searchNameTerm: string}) {
         const filter: any = {};
 
@@ -34,7 +32,7 @@ export const blogsRepositoriesQuery = {
             totalCount: totalCount,
             items: docs.map(blog => this._getInBlogView(blog)),
         };
-    },
+    }
     async findBlogById(_id: ObjectId) {
         const blog = await blogsCollection.findOne({_id})
 
@@ -43,7 +41,7 @@ export const blogsRepositoriesQuery = {
         }
 
         return blog
-    },
+    }
     async findBlogPostById({sortBy, sortDirection, blogId, pageNumber, pageSize}: SortQueryFilterType & {blogId: ObjectId}) {
         const countPromise = postsCollection.countDocuments({blogId});
 
@@ -63,8 +61,8 @@ export const blogsRepositoriesQuery = {
             totalCount: totalCount,
             items: docs.map((blog) => this._getInPostView(blog)),
         };
-    },
-    _getInPostView(post: WithId<PostDbType>): PostViewType {
+    }
+    private _getInPostView(post: WithId<PostDbType>): PostViewType {
         return {
             id: post._id.toString(),
             title: post.title,
@@ -74,8 +72,8 @@ export const blogsRepositoriesQuery = {
             content: post.content,
             shortDescription: post.shortDescription
         };
-    },
-    _getInBlogView(blog: WithId<BlogDbType>): BlogViewType {
+    }
+    private _getInBlogView(blog: WithId<BlogDbType>): BlogViewType {
         return {
             id: blog._id.toString(),
             name: blog.name,
@@ -84,5 +82,5 @@ export const blogsRepositoriesQuery = {
             isMembership: blog.isMembership,
             createdAt: blog.createdAt
         };
-    },
+    }
 }

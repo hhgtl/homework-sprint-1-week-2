@@ -2,8 +2,10 @@ import {Request, Response} from "express";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
 import {jwtAdapter} from "../../adapters/jwt-adapter";
 import {REFRESH_TOKEN} from "../../constants/token-constants";
-import {authService} from "../../domain/auth-service";
 import {ResultStatus} from "../../../../common/types/result-status";
+import {AuthService} from "../../domain/auth-service";
+
+const authService = new AuthService()
 
 export const logoutHandler = async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken

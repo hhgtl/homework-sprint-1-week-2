@@ -1,7 +1,8 @@
 import {Request, Response} from "express";
-import {HttpStatuses
-} from "../../../../common/types/http-statuses";
-import {authService} from "../../domain/auth-service";
+import {HttpStatuses} from "../../../../common/types/http-statuses";
+import {AuthService} from "../../domain/auth-service";
+
+const authService = new AuthService()
 
 export const meHandler = async (req: Request, res: Response) => {
     const bearerJWT = req.headers.authorization;

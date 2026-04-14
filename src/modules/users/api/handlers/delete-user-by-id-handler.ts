@@ -1,7 +1,9 @@
 import {Request, Response} from "express";
 import {ObjectId} from "mongodb";
-import {usersService} from "../../domain/users-service";
+import {UsersService} from "../../domain/users-service";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
+
+const usersService = new UsersService()
 
 export const deleteUserByIdHandler = async (req: Request, res: Response) => {
     const _id = new ObjectId(req.params.id);

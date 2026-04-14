@@ -1,7 +1,9 @@
 import {Request, Response} from "express";
 import {ObjectId} from "mongodb";
-import {postsService} from "../../domain/posts-service";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
+import {PostsService} from "../../domain/posts-service";
+
+const postsService = new PostsService()
 
 
 export const deletePostByPostIdHandler = async (req: Request, res: Response) => {

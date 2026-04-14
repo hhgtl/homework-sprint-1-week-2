@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
-import {rateLimitService} from "../domain/rate-limit-service";
 import {HttpStatuses} from "../../../common/types/http-statuses";
+import {RateLimitService} from "../domain/rate-limit-service";
+
+const rateLimitService = new RateLimitService()
 
 export const rateLimitMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const ip = req.ip || 'unknown';

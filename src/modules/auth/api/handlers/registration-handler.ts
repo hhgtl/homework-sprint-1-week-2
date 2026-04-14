@@ -1,7 +1,9 @@
 import {Request, Response} from "express";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
-import {authService} from "../../domain/auth-service";
 import {ResultStatus} from "../../../../common/types/result-status";
+import {AuthService} from "../../domain/auth-service";
+
+const authService = new AuthService()
 
 export const registrationHandler = async (req: Request, res: Response) => {
     const { login, password, email } = req.body;

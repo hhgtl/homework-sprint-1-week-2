@@ -3,20 +3,20 @@ import {AuthViewType} from "../types/auth-view-type";
 import {AuthDbType} from "../types/auth-db-type";
 import {authCollection} from "../../../db/db";
 
-export const authRepositoriesQuery = {
+export class AuthRepositoriesQuery {
     async findAllSessionsByUserId(userId: ObjectId): Promise<AuthViewType[] | null> {
         const sessions = await authCollection.find({userId}).toArray()
 
         if (!sessions) return null;
 
         return sessions.map(session => this._getInView(session));
-    },
-    _getInView(sessions: WithId<AuthDbType>): AuthViewType {
+    }
+    private _getInView(sessions: WithId<AuthDbType>): AuthViewType {
         return {
             deviceId: sessions.deviceId,
             title: sessions.title,
             ip: sessions.ip,
             lastActiveDate: sessions.lastActiveDate,
         };
-    },
+    }
 }

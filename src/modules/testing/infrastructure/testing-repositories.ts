@@ -8,8 +8,8 @@ import {
 } from "../../../db/db";
 
 
-export const testingRepositories = {
-    removeAllData: async () => {
+export class TestingRepositories {
+    async removeAllData() {
         await postsCollection.deleteMany()
         await blogsCollection.deleteMany()
         await usersCollection.deleteMany()

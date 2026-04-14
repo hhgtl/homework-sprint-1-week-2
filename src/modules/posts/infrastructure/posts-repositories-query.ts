@@ -2,10 +2,9 @@ import {postsCollection} from "../../../db/db";
 import {SortQueryFilterType} from "../../../common/types/sort-query-filter-type";
 import {PostDbType} from "../types/post-db-type";
 import {ObjectId, WithId} from "mongodb";
-import {BlogViewType} from "../../blogs/types/blog-view-type";
 import {PostViewType} from "../types/post-view-type";
 
-export const postsRepositoriesQuery = {
+export class PostsRepositoriesQuery {
     async getAllPosts({sortBy, sortDirection, pageNumber, pageSize}: SortQueryFilterType) {
         const countPromise = postsCollection.countDocuments();
 
@@ -24,7 +23,7 @@ export const postsRepositoriesQuery = {
             totalCount: totalCount,
             items: posts.map((post) => this._getInView(post)),
         };
-    },
+    }
     async findPostsById(_id: ObjectId) {
         const post = await postsCollection.findOne({_id})
 
@@ -32,8 +31,8 @@ export const postsRepositoriesQuery = {
             return this._getInView(post)
         }
         return post
-    },
-    _getInView(post: WithId<PostDbType>): PostViewType {
+    }
+    private _getInView(post: WithId<PostDbType>): PostViewType {
         return {
             id: post._id.toString(),
             title: post.title,
@@ -43,5 +42,5 @@ export const postsRepositoriesQuery = {
             content: post.content,
             shortDescription: post.shortDescription
         };
-    },
+    }
 }

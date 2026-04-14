@@ -1,10 +1,10 @@
 import {SortQueryFilterType} from "../../../common/types/sort-query-filter-type";
-import {blogsCollection, usersCollection} from "../../../db/db";
+import {usersCollection} from "../../../db/db";
 import {ObjectId, WithId} from "mongodb";
 import {UsersViewType} from "../types/users-view-type";
 import {UsersDbType} from "../types/users-db-type";
 
-export const usersRepositoriesQuery = {
+export class UsersRepositoriesQuery {
     async getAllUsers({sortBy, sortDirection, pageNumber, pageSize, searchEmailTerm, searchLoginTerm}: SortQueryFilterType & {searchLoginTerm: string | null, searchEmailTerm: string | null}) {
         const filter: any = {};
 
@@ -38,7 +38,7 @@ export const usersRepositoriesQuery = {
             totalCount: totalCount,
             items: users.map(user => this._getInUserView(user)),
         };
-    },
+    }
     async findUserById(_id: ObjectId) {
         const user = await usersCollection.findOne({_id})
 
@@ -47,8 +47,8 @@ export const usersRepositoriesQuery = {
         }
 
         return user
-    },
-    _getInUserView(user: WithId<UsersDbType>): UsersViewType {
+    }
+    private _getInUserView(user: WithId<UsersDbType>): UsersViewType {
         return {
             id: user._id.toString(),
             email: user.email,

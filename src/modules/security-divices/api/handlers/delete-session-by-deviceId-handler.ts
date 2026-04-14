@@ -1,7 +1,9 @@
 import {Request, Response} from "express";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
-import {securityDivicesService} from "../../domain/security-divices-service";
 import {ResultStatus} from "../../../../common/types/result-status";
+import {SecurityDivicesService} from "../../domain/security-divices-service";
+
+const securityDivicesService = new SecurityDivicesService()
 
 export const deleteSessionByDeviceIdHandler = async (req: Request<{ deviceId: string }>, res: Response) => {
     const deviceId = req.params.deviceId;

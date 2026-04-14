@@ -1,8 +1,10 @@
-import {commentsRepositories} from "../infrastructure/comments-repositories";
+import {CommentsRepositories} from "../infrastructure/comments-repositories";
 import {ObjectId} from "mongodb";
 import {HttpStatuses} from "../../../common/types/http-statuses";
 
-export const commentsService = {
+export class CommentsService {
+    private commentsRepositories = new CommentsRepositories()
+
     async createNewComment({content, postId, userId, userLogin}: {postId: ObjectId, content: string, userId: ObjectId, userLogin: string}) {
         const comment = {
             content,
@@ -14,10 +16,10 @@ export const commentsService = {
             postId
         }
 
-        return await commentsRepositories.createComment(comment)
-    },
+        return await this.commentsRepositories.createComment(comment)
+    }
     async changeCommentById({content, commentId, userId}: {commentId: ObjectId, content: string, userId: ObjectId}) {
-        const foundedComment = await commentsRepositories.findCommentById(commentId)
+        const foundedComment = await this.commentsRepositories.findCommentById(commentId)
 
         if (!foundedComment) {
             return {
@@ -28,7 +30,7 @@ export const commentsService = {
         }
 
         if (foundedComment && foundedComment.commentatorInfo.userId.toString() === userId.toString()) {
-            await commentsRepositories.updateComment({content, _id: commentId})
+            await this.commentsRepositories.updateComment({content, _id: commentId})
 
             return {
                 status: HttpStatuses.Success,
@@ -44,9 +46,9 @@ export const commentsService = {
             };
         }
 
-    },
+    }
     async deleteComment({commentId, userId}: {commentId: ObjectId, userId: ObjectId}) {
-        const foundedComment = await commentsRepositories.findCommentById(commentId)
+        const foundedComment = await this.commentsRepositories.findCommentById(commentId)
 
         if (!foundedComment) {
             return {
@@ -57,7 +59,7 @@ export const commentsService = {
         }
 
         if (foundedComment.commentatorInfo.userId.toString() === userId.toString()) {
-            await commentsRepositories.deleteCommentById(commentId)
+            await this.commentsRepositories.deleteCommentById(commentId)
 
             return {
                 status: HttpStatuses.Success,
@@ -73,5 +75,4 @@ export const commentsService = {
         }
 
     }
-
 }

@@ -1,10 +1,13 @@
 import {jwtAdapter} from "../../auth/adapters/jwt-adapter";
 import {ResultStatus} from "../../../common/types/result-status";
-import {authRepositoriesQuery} from "../../auth/infrastructure/auth-repositories-query";
+import {AuthRepositoriesQuery} from "../../auth/infrastructure/auth-repositories-query";
 import {ObjectId} from "mongodb";
-import {authRepositories} from "../../auth/infrastructure/auth-repositories";
+import {AuthRepositories} from "../../auth/infrastructure/auth-repositories";
 
-export const securityDivicesService = {
+export class SecurityDivicesService {
+    private authRepositoriesQuery = new AuthRepositoriesQuery()
+    private authRepositories = new AuthRepositories()
+
     async getAllActiveSessions({accessToken}: {accessToken: string}) {
         const jwtPayload = jwtAdapter.verifyToken(accessToken)
 
@@ -18,7 +21,7 @@ export const securityDivicesService = {
 
         const {userId} = jwtPayload
 
-        const allSessions = await authRepositoriesQuery.findAllSessionsByUserId(new ObjectId(userId!))
+        const allSessions = await this.authRepositoriesQuery.findAllSessionsByUserId(new ObjectId(userId!))
 
         if (!allSessions) {
             return {
@@ -33,7 +36,7 @@ export const securityDivicesService = {
             data: allSessions,
             extensions: [],
         };
-    },
+    }
     async deleteSessionByDeviceId({deviceId, accessToken}: {deviceId: string, accessToken: string}) {
         const accessTokenPayload = jwtAdapter.verifyToken(accessToken)
 
@@ -47,7 +50,7 @@ export const securityDivicesService = {
 
         const { userId } = accessTokenPayload
 
-        const session = await authRepositories.findSessionByDeviceId(deviceId)
+        const session = await this.authRepositories.findSessionByDeviceId(deviceId)
 
         if (!session) {
             return {
@@ -65,7 +68,7 @@ export const securityDivicesService = {
             };
         }
 
-        const isDeleted = await authRepositories.deleteSessionByDeviceId(deviceId!)
+        const isDeleted = await this.authRepositories.deleteSessionByDeviceId(deviceId!)
 
         if (isDeleted) {
             return {
@@ -80,7 +83,7 @@ export const securityDivicesService = {
             data: null,
             extensions: [],
         };
-    },
+    }
     async deleteAllSessions({accessToken}: {accessToken: string}) {
         const accessTokenPayload = jwtAdapter.verifyToken(accessToken)
 
@@ -94,7 +97,7 @@ export const securityDivicesService = {
 
         const { userId, deviceId } = accessTokenPayload
 
-        await authRepositories.deleteAllSessionByUserIdExcludeCurrentSession({userId: new ObjectId(userId), deviceId})
+        await this.authRepositories.deleteAllSessionByUserIdExcludeCurrentSession({userId: new ObjectId(userId), deviceId})
 
         return {
             status: ResultStatus.Success,

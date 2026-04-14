@@ -1,7 +1,9 @@
 import {ObjectId} from "mongodb";
-import {commentsService} from "../../domain/comments-service";
-import {HttpStatuses} from "../../../../common/types/http-statuses";
 import {Request, Response} from "express";
+import {HttpStatuses} from "../../../../common/types/http-statuses";
+import {CommentsService} from "../../domain/comments-service";
+
+const commentsService = new CommentsService()
 
 export const changeCommentByIdHandler = async (req: Request, res: Response)=> {
     const content = req.body.content;

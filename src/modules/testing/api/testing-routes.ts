@@ -1,5 +1,7 @@
 import {Request, Response, Router} from "express";
-import {testingRepositories} from "../infrastructure/testing-repositories";
+import {TestingRepositories} from "../infrastructure/testing-repositories";
+
+const testingRepositories = new TestingRepositories()
 
 export const testingRouter = Router({})
 

@@ -1,7 +1,10 @@
-import {usersService} from "../../domain/users-service";
+import {UsersService} from "../../domain/users-service";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
-import {usersRepositoriesQuery} from "../../infrastructure/users-repositories-query";
+import {UsersRepositoriesQuery} from "../../infrastructure/users-repositories-query";
 import {Request, Response} from "express";
+
+const usersService = new UsersService()
+const usersRepositoriesQuery = new UsersRepositoriesQuery()
 
 export const createNewUserHandler = async (req: Request, res: Response) => {
     const login = req.body.login;

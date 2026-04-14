@@ -3,12 +3,9 @@ import {paginationQueryValidation} from "../../../common/validation/pagination-q
 import {query} from "express-validator";
 import {inputValidationMiddleware} from "../../../common/middleware/inputValidationMiddleware";
 import {authMiddleware} from "../../../common/middleware/auth-middleware";
-import {usersRepositoriesQuery} from "../infrastructure/users-repositories-query";
-import {getPaginationWithSortFields} from "../../../common/utils/get-pagination-with-sort-fields";
 import {loginValidation} from "../../../common/validation/login-validation";
 import {passwordValidation} from "../../../common/validation/password-validation";
 import {emailValidation} from "../../../common/validation/email-validation";
-import {usersService} from "../domain/users-service";
 import {HttpStatuses} from "../../../common/types/http-statuses";
 import {idValidation} from "../../../common/validation/id-validation";
 import {ObjectId} from "mongodb";

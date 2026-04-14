@@ -1,30 +1,31 @@
-import {usersRepositories} from "../../users/infrastructure/users-repositories";
+import {UsersRepositories} from "../../users/infrastructure/users-repositories";
 import {bcryptService} from "../adapters/hash-adapter";
 import {HttpStatuses} from "../../../common/types/http-statuses";
 import {jwtAdapter} from "../adapters/jwt-adapter";
-import {usersRepositoriesQuery} from "../../users/infrastructure/users-repositories-query";
+import {UsersRepositoriesQuery} from "../../users/infrastructure/users-repositories-query";
 import {ObjectId} from "mongodb";
 import {Result} from "../../../common/types/result";
 import {ResultStatus} from "../../../common/types/result-status";
-import {UsersDbType} from "../../users/types/users-db-type";
 import {randomUUID} from "crypto";
 import {addHours} from "date-fns";
 import {nodemailerAdapter} from "../adapters/nodemailer-adapter";
 import {UsersViewType} from "../../users/types/users-view-type";
-import {AuthViewType} from "../types/auth-view-type";
 import jwt, {JwtPayload} from "jsonwebtoken";
-import {authRepositories} from "../infrastructure/auth-repositories";
+import {AuthRepositories} from "../infrastructure/auth-repositories";
 import {AuthDbType} from "../types/auth-db-type";
-import {
-    jwtRefreshBlackListRepositories
-} from "../../jwt-refresh-black-list/infrastructure/jwt-refresh-black-list-repositories";
+import {JwtRefreshBlackListRepositories} from "../../jwt-refresh-black-list/infrastructure/jwt-refresh-black-list-repositories";
 
 const accessTokenExpirationForTest = '10s'
 const accessTokenExpiration = '10s'
 const refreshTokenExpiration = '20s'
 const refreshTokenExpirationForTest = '20s'
 
-export const authService = {
+export class AuthService {
+    private usersRepositories = new UsersRepositories()
+    private usersRepositoriesQuery = new UsersRepositoriesQuery()
+    private authRepositories = new AuthRepositories()
+    private jwtRefreshBlackListRepositories = new JwtRefreshBlackListRepositories()
+
     async loginUser({loginOrEmail, password, userAgent, ip}: {loginOrEmail: string, password: string, userAgent: string, ip: string}): Promise<Result<{accessToken: string, refreshToken: string} | null>> {
 
         const result =  await this._checkUserCredentials({loginOrEmail, password});
@@ -56,14 +57,14 @@ export const authService = {
             ip
         }
 
-        const sessionId = await authRepositories.createNewSession(newSession)
+        await this.authRepositories.createNewSession(newSession)
 
         return {
             status: HttpStatuses.Success,
             data: { accessToken, refreshToken },
             extensions: [],
         };
-    },
+    }
     async me(jwtToken: string): Promise<Result<{login: string, email: string, userId: string} | null>> {
         try {
             const payload = jwtAdapter.verifyToken(jwtToken)
@@ -78,7 +79,7 @@ export const authService = {
 
             const {userId} = payload
 
-            const user = await usersRepositoriesQuery.findUserById(new ObjectId(userId))
+            const user = await this.usersRepositoriesQuery.findUserById(new ObjectId(userId))
 
             if (!user) {
                 return {
@@ -106,11 +107,11 @@ export const authService = {
                 extensions: [],
             };
         }
-    },
+    }
     async registration({login, email, password}: {login: string, password: string, email: string}): Promise<Result<UsersViewType | null>> {
         const errorMessages = []
-        const isLoginUnique = await usersRepositories.findUserByLogin(login)
-        const isEmailUnique = await usersRepositories.findUserByEmail(email)
+        const isLoginUnique = await this.usersRepositories.findUserByLogin(login)
+        const isEmailUnique = await this.usersRepositories.findUserByEmail(email)
 
         if (isEmailUnique) {
             errorMessages.push({field: 'email', message: 'email should be unique'})
@@ -144,9 +145,9 @@ export const authService = {
             }
         }
 
-        const userId = await usersRepositories.createUser(newUser);
+        const userId = await this.usersRepositories.createUser(newUser);
 
-        const findCreatedUser = await usersRepositoriesQuery.findUserById(userId);
+        const findCreatedUser = await this.usersRepositoriesQuery.findUserById(userId);
 
         await nodemailerAdapter.sendEmail({email, confirmationCode}).catch(console.error);
 
@@ -155,9 +156,9 @@ export const authService = {
             data: findCreatedUser,
             extensions: [],
         };
-    },
+    }
     async registrationConfirmation({ code }: {code: string}): Promise<Result> {
-        const fundedUserByConfirmationCode = await usersRepositories.findUserByConfirmationCode(code);
+        const fundedUserByConfirmationCode = await this.usersRepositories.findUserByConfirmationCode(code);
 
         if (!fundedUserByConfirmationCode) {
             return {
@@ -183,16 +184,16 @@ export const authService = {
             };
         }
 
-        await usersRepositories.confirmUserById(fundedUserByConfirmationCode._id)
+        await this.usersRepositories.confirmUserById(fundedUserByConfirmationCode._id)
 
         return {
             status: ResultStatus.Success,
             data: null,
             extensions: [],
         };
-    },
+    }
     async registrationEmailResending({ email }: {email: string}): Promise<Result> {
-        const user = await usersRepositories.findUserByEmail(email)
+        const user = await this.usersRepositories.findUserByEmail(email)
 
         if (!user) {
             return {
@@ -212,7 +213,7 @@ export const authService = {
 
         const confirmationCode = randomUUID()
 
-        const isUpdatedConfirmationCode = await usersRepositories.updateConfirmationCode({_id: user._id,
+        const isUpdatedConfirmationCode = await this.usersRepositories.updateConfirmationCode({_id: user._id,
             newCode: confirmationCode,
             newExpirationDate: addHours(new Date, 12)})
 
@@ -231,7 +232,7 @@ export const authService = {
             data: null,
             extensions: [],
         };
-    },
+    }
     async refreshToken(refreshToken: string): Promise<Result<{newAccessToken: string, newRefreshToken: string} | null>> {
         const payload = jwtAdapter.verifyToken(refreshToken)
         console.log(payload)
@@ -243,7 +244,7 @@ export const authService = {
             };
         }
 
-        const user = await usersRepositories.findUserById(new ObjectId(payload.userId))
+        const user = await this.usersRepositories.findUserById(new ObjectId(payload.userId))
 
         if (!user) {
             return {
@@ -261,7 +262,7 @@ export const authService = {
             };
         }
 
-        const session = await authRepositories.findSessionByDeviceId(payload.deviceId)
+        const session = await this.authRepositories.findSessionByDeviceId(payload.deviceId)
 
         const decodedUserRefreshToken = jwt.decode(refreshToken) as JwtPayload;
 
@@ -287,7 +288,7 @@ export const authService = {
             lastActiveDate: new Date().toISOString()
         }
 
-        const findJwtInBlackList = await jwtRefreshBlackListRepositories.findJwtInBlackList(refreshToken)
+        const findJwtInBlackList = await this.jwtRefreshBlackListRepositories.findJwtInBlackList(refreshToken)
 
         if (findJwtInBlackList) {
             return {
@@ -297,17 +298,17 @@ export const authService = {
             };
         }
 
-        await jwtRefreshBlackListRepositories.addJwtToBlackList(refreshToken)
+        await this.jwtRefreshBlackListRepositories.addJwtToBlackList(refreshToken)
 
 
-        await authRepositories.updateSessionById(session._id, updatedSession)
+        await this.authRepositories.updateSessionById(session._id, updatedSession)
 
         return {
             status: ResultStatus.Success,
             data: {newAccessToken, newRefreshToken},
             extensions: [],
         };
-    },
+    }
     async logout(refreshToken: string): Promise<Result> {
         const payload = jwtAdapter.verifyToken(refreshToken)
 
@@ -319,7 +320,7 @@ export const authService = {
             };
         }
 
-        const findJwtInBlackList = await jwtRefreshBlackListRepositories.findJwtInBlackList(refreshToken)
+        const findJwtInBlackList = await this.jwtRefreshBlackListRepositories.findJwtInBlackList(refreshToken)
 
         if (findJwtInBlackList) {
             return {
@@ -329,22 +330,22 @@ export const authService = {
             };
         }
 
-        await jwtRefreshBlackListRepositories.addJwtToBlackList(refreshToken)
+        await this.jwtRefreshBlackListRepositories.addJwtToBlackList(refreshToken)
 
 
         const { deviceId } = payload;
 
-        await authRepositories.deleteSessionByDeviceId(deviceId)
+        await this.authRepositories.deleteSessionByDeviceId(deviceId)
 
         return {
             status: ResultStatus.Success,
             data: null,
             extensions: [],
         };
-    },
+    }
 
-    async _checkUserCredentials({loginOrEmail, password}: {loginOrEmail: string, password: string}) {
-        const user = await usersRepositories.findByLoginOrEmail(loginOrEmail);
+    private async _checkUserCredentials({loginOrEmail, password}: {loginOrEmail: string, password: string}) {
+        const user = await this.usersRepositories.findByLoginOrEmail(loginOrEmail);
 
         if (!user) {
             return {
@@ -371,5 +372,4 @@ export const authService = {
             extensions: [],
         };
     }
-
 }

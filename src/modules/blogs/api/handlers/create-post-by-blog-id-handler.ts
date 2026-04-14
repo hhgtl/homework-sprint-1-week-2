@@ -1,8 +1,11 @@
 import {Request, Response} from "express";
 import {ObjectId} from "mongodb";
-import {blogsService} from "../../domain/blogs-service";
+import {BlogsService} from "../../domain/blogs-service";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
-import {postsRepositoriesQuery} from "../../../posts/infrastructure/posts-repositories-query";
+import {PostsRepositoriesQuery} from "../../../posts/infrastructure/posts-repositories-query";
+
+const blogsService = new BlogsService()
+const postsRepositoriesQuery = new PostsRepositoriesQuery()
 
 
 export const createPostByBlogIdHandler = async (req: Request, res: Response) => {

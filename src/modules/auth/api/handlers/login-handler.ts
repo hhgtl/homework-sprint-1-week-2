@@ -1,8 +1,9 @@
-import {authService} from "../../domain/auth-service";
-import {HttpStatuses
-} from "../../../../common/types/http-statuses";
+import {AuthService} from "../../domain/auth-service";
+import {HttpStatuses} from "../../../../common/types/http-statuses";
 import { Request, Response } from 'express';
 import {COOKIE_MAX_AGE_20_SECONDS, REFRESH_TOKEN} from "../../constants/token-constants";
+
+const authService = new AuthService()
 
 export const loginHandler = async (req: Request, res: Response) => {
     const {loginOrEmail, password} = req.body;

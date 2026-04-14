@@ -1,7 +1,9 @@
 import {Request, Response} from "express";
 import {getPaginationWithSortFields} from "../../../../common/utils/get-pagination-with-sort-fields";
-import {usersRepositoriesQuery} from "../../infrastructure/users-repositories-query";
+import {UsersRepositoriesQuery} from "../../infrastructure/users-repositories-query";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
+
+const usersRepositoriesQuery = new UsersRepositoriesQuery()
 
 export const getAllUsersHandler = async (req: Request, res: Response) => {
     const {sortBy, sortDirection, pageNumber, pageSize} = getPaginationWithSortFields(req.query);

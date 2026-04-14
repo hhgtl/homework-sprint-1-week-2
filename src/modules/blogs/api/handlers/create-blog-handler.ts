@@ -1,7 +1,10 @@
 import {Request, Response} from "express";
-import {blogsService} from "../../domain/blogs-service";
-import {blogsRepositoriesQuery} from "../../infrastructure/blogs-repositories-query";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
+import {BlogsService} from "../../domain/blogs-service";
+import {BlogsRepositoriesQuery} from "../../infrastructure/blogs-repositories-query";
+
+const blogsService = new BlogsService()
+const blogsRepositoriesQuery = new BlogsRepositoriesQuery()
 
 export const createBlogHandler = async (req: Request, res: Response) => {
     const name = req.body.name;

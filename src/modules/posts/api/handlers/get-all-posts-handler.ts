@@ -1,7 +1,9 @@
 import {Request, Response} from "express";
 import {getPaginationWithSortFields} from "../../../../common/utils/get-pagination-with-sort-fields";
-import {postsRepositoriesQuery} from "../../infrastructure/posts-repositories-query";
 import {HttpStatuses} from "../../../../common/types/http-statuses";
+import {PostsRepositoriesQuery} from "../../infrastructure/posts-repositories-query";
+
+const postsRepositoriesQuery = new PostsRepositoriesQuery()
 
 export const getAllPostsHandler = async (req: Request, res: Response) => {
     const {sortBy, sortDirection, pageNumber, pageSize} = getPaginationWithSortFields(req.query);

@@ -1,10 +1,15 @@
 import {ObjectId} from "mongodb";
-import {postsRepositoriesQuery} from "../../infrastructure/posts-repositories-query";
-import {HttpStatuses} from "../../../../common/types/http-statuses";
-import {usersRepositoriesQuery} from "../../../users/infrastructure/users-repositories-query";
-import {commentsService} from "../../../comments/domain/comments-service";
-import {commentsRepositoriesQuery} from "../../../comments/infrastructure/comments-repositories-query";
 import {Request, Response} from "express";
+import {PostsRepositoriesQuery} from "../../infrastructure/posts-repositories-query";
+import {HttpStatuses} from "../../../../common/types/http-statuses";
+import {UsersRepositoriesQuery} from "../../../users/infrastructure/users-repositories-query";
+import {CommentsService} from "../../../comments/domain/comments-service";
+import {CommentsRepositoriesQuery} from "../../../comments/infrastructure/comments-repositories-query";
+
+const postsRepositoriesQuery = new PostsRepositoriesQuery()
+const usersRepositoriesQuery = new UsersRepositoriesQuery()
+const commentsService = new CommentsService()
+const commentsRepositoriesQuery = new CommentsRepositoriesQuery()
 
 export const createNewCommentByPostIdHandler = async (req: Request, res: Response) => {
     const content = req.body.content;
